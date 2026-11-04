@@ -39,3 +39,6 @@ temp/
 *.db
 *.dump
 *.backup
+
+# Local backend environment and secrets
+backend/.env.local
