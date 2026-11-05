@@ -2,6 +2,7 @@ package com.myboss.backend.modules.task.repository;
 
 import com.myboss.backend.modules.task.entity.TaskEntity;
 import com.myboss.backend.modules.task.enums.TaskStatus;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -28,5 +29,12 @@ public interface TaskRepository extends JpaRepository<TaskEntity, UUID> {
     List<TaskEntity> findAllByBusinessIdAndStatusAndDeletedAtIsNull(
             UUID businessId,
             TaskStatus status
+    );
+
+    List<TaskEntity>
+    findAllByBusinessIdAndStatusAndAssignedToMembershipIdAndDeletedAtIsNull(
+            UUID businessId,
+            TaskStatus status,
+            UUID membershipId
     );
 }
