@@ -2,6 +2,7 @@ package com.myboss.backend.modules.business.repository;
 
 import com.myboss.backend.modules.business.entity.StaffInvitationEntity;
 import com.myboss.backend.modules.business.enums.InvitationStatus;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
