@@ -2,6 +2,7 @@ import type {
   ApiErrorResponse,
   BusinessResponse,
   UserResponse,
+  TaskResponse,
   AcceptInvitationResponse,
 } from "@/types/api";
 
@@ -33,7 +34,7 @@ async function apiRequest<T>(
       const error = (await response.json()) as ApiErrorResponse;
       message = error.message ?? error.error ?? message;
     } catch {
-      // Keep the default error message.
+      // Use the default message.
     }
 
     throw new Error(message);
@@ -58,10 +59,14 @@ export const api = {
     );
   },
 
-  registerBusiness(
-    token: string,
-    name: string
-  ) {
+  getBusiness(token: string, businessId: string) {
+    return apiRequest<BusinessResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}`,
+      token
+    );
+  },
+
+  registerBusiness(token: string, name: string) {
     return apiRequest<BusinessResponse>(
       "/api/businesses",
       token,
@@ -69,6 +74,13 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ name }),
       }
+    );
+  },
+
+  getTasks(token: string, businessId: string) {
+    return apiRequest<TaskResponse[]>(
+      `/api/businesses/${encodeURIComponent(businessId)}/tasks`,
+      token
     );
   },
 

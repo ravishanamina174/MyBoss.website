@@ -13,6 +13,22 @@ export interface BusinessResponse {
   createdAt: string;
 }
 
+export interface TaskResponse {
+  id: string;
+  businessId: string;
+  createdByMembershipId: string;
+  assignedToMembershipId: string | null;
+  completedByMembershipId: string | null;
+  title: string;
+  description: string | null;
+  status: "PENDING" | "COMPLETED" | "CANCELLED";
+  dueAt: string | null;
+  completedAt: string | null;
+  editedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface RegisterBusinessRequest {
   name: string;
 }
