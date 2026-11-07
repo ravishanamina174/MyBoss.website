@@ -1,0 +1,13 @@
+export default function TasksPage() {
+  return (
+    <section className="space-y-2">
+      <h2 className="text-2xl font-semibold tracking-tight">
+        Tasks
+      </h2>
+
+      <p className="text-sm text-muted-foreground">
+        Manage and track your business tasks.
+      </p>
+    </section>
+  );
+}
