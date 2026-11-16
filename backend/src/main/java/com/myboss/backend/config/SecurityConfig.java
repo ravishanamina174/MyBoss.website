@@ -2,6 +2,8 @@
 package com.myboss.backend.config;
 
 import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +38,9 @@ public class SecurityConfig {
     @Value("${clerk.jwks-uri}")
     private String jwksUri;
 
+    @Value("${app.cors-allowed-origins}")
+    private String allowedOrigins;
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
@@ -51,6 +56,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
                 .anyRequest().authenticated()
             )
 
@@ -65,9 +71,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
-                List.of("http://localhost:3000")
-        );
+        configuration.setAllowedOrigins(parseAllowedOrigins());
 
         configuration.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
@@ -99,9 +103,7 @@ public class SecurityConfig {
         OAuth2TokenValidator<Jwt> issuerValidator =
             JwtValidators.createDefaultWithIssuer(issuer);
 
-        List<String> allowedParties = List.of(
-            "http://localhost:3000"
-        );
+        List<String> allowedParties = parseAllowedOrigins();
 
         OAuth2TokenValidator<Jwt> authorizedPartyValidator = jwt -> {
             String authorizedParty = jwt.getClaimAsString("azp");
@@ -128,5 +130,12 @@ public class SecurityConfig {
         );
 
         return decoder;
+    }
+
+    private List<String> parseAllowedOrigins() {
+        return Arrays.stream(allowedOrigins.split(","))
+            .map(String::trim)
+            .filter(origin -> !origin.isEmpty())
+            .collect(Collectors.toList());
     }
 }
