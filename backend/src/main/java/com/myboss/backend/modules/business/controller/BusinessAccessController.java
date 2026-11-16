@@ -1,9 +1,7 @@
-
 package com.myboss.backend.modules.business.controller;
 
 import java.util.UUID;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,45 +22,35 @@ public class BusinessAccessController {
     }
 
     @GetMapping
-    @PreAuthorize(
-        "@businessAuthorizationService.hasActiveMembership(#businessId)"
-    )
-    public AccessResponse checkAccess(
-            @PathVariable UUID businessId) {
-
+    public AccessResponse checkAccess(@PathVariable UUID businessId) {
         BusinessMembershipEntity membership =
-            authorizationService.requireActiveMembership(businessId);
+                authorizationService.requireActiveMembership(businessId);
 
         return new AccessResponse(
-            true,
-            businessId,
-            membership.getRole().name(),
-            membership.getStatus().name()
+                true,
+                businessId,
+                membership.getRole().name(),
+                membership.getStatus().name()
         );
     }
 
     @GetMapping("/owner-check")
-    @PreAuthorize(
-        "@businessAuthorizationService.isOwner(#businessId)"
-    )
-    public AccessResponse checkOwnerAccess(
-            @PathVariable UUID businessId) {
-
+    public AccessResponse checkOwnerAccess(@PathVariable UUID businessId) {
         BusinessMembershipEntity membership =
-            authorizationService.requireOwner(businessId);
+                authorizationService.requireOwner(businessId);
 
         return new AccessResponse(
-            true,
-            businessId,
-            membership.getRole().name(),
-            membership.getStatus().name()
+                true,
+                businessId,
+                membership.getRole().name(),
+                membership.getStatus().name()
         );
     }
 
     public record AccessResponse(
-        boolean authorized,
-        UUID businessId,
-        String role,
-        String status
+            boolean authorized,
+            UUID businessId,
+            String role,
+            String status
     ) {}
 }

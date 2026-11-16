@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ownerNavigation } from "@/config/navigation";
+import { ownerNavigation, staffNavigation } from "@/config/navigation";
 import { Brand } from "@/components/shared/brand";
 import { cn } from "@/lib/utils";
 
+import { useBusinessRole } from "@/hooks/use-business-role";
+
 export function Sidebar() {
   const pathname = usePathname();
+
+  const role = useBusinessRole();
+  const navigation = role === "OWNER" ? ownerNavigation : staffNavigation;
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] flex-col border-r border-sidebar-border bg-sidebar lg:flex">
@@ -40,7 +45,7 @@ export function Sidebar() {
           Workspace
         </p>
 
-        {ownerNavigation.map((item) => {
+        {navigation.map((item) => {
           const Icon = item.icon;
 
           const isActive =

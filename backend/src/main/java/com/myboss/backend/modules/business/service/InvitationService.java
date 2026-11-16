@@ -110,24 +110,36 @@ public class InvitationService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public List<InvitationResponse> getInvitations(UUID businessId) {
+    @Transactional
+public List<InvitationResponse> getInvitations(UUID businessId) {
+    authorizationService.requireOwner(businessId);
 
-        authorizationService.requireOwner(businessId);
+    Instant now = Instant.now();
 
-        return invitationRepository.findAllByBusinessIdAndStatus(
-                        businessId,
-                        InvitationStatus.PENDING
-                )
-                .stream()
-                .map(invitation -> new InvitationResponse(
-                        invitation.getId(),
-                        invitation.getStatus().name(),
-                        invitation.getExpiresAt(),
-                        invitation.getCreatedAt()
-                ))
-                .toList();
+    List<StaffInvitationEntity> pending =
+            invitationRepository.findAllByBusinessIdAndStatus(
+                    businessId,
+                    InvitationStatus.PENDING
+            );
+
+    for (StaffInvitationEntity invitation : pending) {
+        if (!invitation.getExpiresAt().isAfter(now)) {
+            invitation.expire();
+            invitationRepository.save(invitation);
+        }
     }
+
+    return pending.stream()
+            .filter(invitation ->
+                    invitation.getStatus() == InvitationStatus.PENDING)
+            .map(invitation -> new InvitationResponse(
+                    invitation.getId(),
+                    invitation.getStatus().name(),
+                    invitation.getExpiresAt(),
+                    invitation.getCreatedAt()
+            ))
+            .toList();
+}
 
     @Transactional(noRollbackFor = ResponseStatusException.class)
     public void revokeInvitation(UUID businessId, UUID invitationId) {

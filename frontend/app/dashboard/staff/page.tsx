@@ -1,13 +1,5 @@
-export default function StaffPage() {
-  return (
-    <section className="space-y-2">
-      <h2 className="text-2xl font-semibold tracking-tight">
-        Staff
-      </h2>
+import { StaffPageClient } from "@/components/staff/staff-page-client";
 
-      <p className="text-sm text-muted-foreground">
-        Manage your business team.
-      </p>
-    </section>
-  );
+export default function StaffPage() {
+  return <StaffPageClient />;
 }

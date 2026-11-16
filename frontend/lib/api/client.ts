@@ -7,7 +7,9 @@ import type {
   StaffResponse,
   CreateTaskRequest,
   UpdateTaskRequest,
-  TaskStatus
+  TaskStatus,
+  InvitationResponse,
+  CreateInvitationResponse,
 } from "@/types/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -192,6 +194,57 @@ deleteTask(
         method: "POST",
         body: JSON.stringify({ token: invitationToken }),
       }
+    );
+  },
+
+    getInvitations(token: string, businessId: string) {
+    return apiRequest<InvitationResponse[]>(
+      `/api/businesses/${encodeURIComponent(businessId)}/invitations`,
+      token
+    );
+  },
+
+  createInvitation(token: string, businessId: string) {
+    return apiRequest<CreateInvitationResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/invitations`,
+      token,
+      { method: "POST" }
+    );
+  },
+
+  revokeInvitation(
+    token: string,
+    businessId: string,
+    invitationId: string
+  ) {
+    return apiRequest<void>(
+      `/api/businesses/${encodeURIComponent(businessId)}/invitations/${encodeURIComponent(invitationId)}/revoke`,
+      token,
+      { method: "POST" }
+    );
+  },
+
+  suspendStaff(
+    token: string,
+    businessId: string,
+    membershipId: string
+  ) {
+    return apiRequest<StaffResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/staff/${encodeURIComponent(membershipId)}/suspend`,
+      token,
+      { method: "PATCH" }
+    );
+  },
+
+  activateStaff(
+    token: string,
+    businessId: string,
+    membershipId: string
+  ) {
+    return apiRequest<StaffResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/staff/${encodeURIComponent(membershipId)}/activate`,
+      token,
+      { method: "PATCH" }
     );
   },
 };

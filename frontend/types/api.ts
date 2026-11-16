@@ -63,9 +63,22 @@ export interface StaffResponse {
   userId: string;
   fullName: string | null;
   email: string;
-  role: string;
-  status: string;
+  role: "OWNER" | "STAFF";
+  status: "ACTIVE" | "SUSPENDED";
   joinedAt: string;
+}
+
+export interface InvitationResponse {
+  id: string;
+  status: "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED";
+  expiresAt: string;
+  createdAt: string;
+}
+
+export interface CreateInvitationResponse {
+  invitationId: string;
+  invitationLink: string;
+  expiresAt: string;
 }
 
 export type TaskStatus =

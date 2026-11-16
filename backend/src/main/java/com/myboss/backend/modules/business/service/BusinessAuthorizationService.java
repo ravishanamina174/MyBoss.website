@@ -69,4 +69,22 @@ public class BusinessAuthorizationService {
 
         return membership;
     }
+
+    public boolean hasActiveMembership(UUID businessId) {
+    try {
+        requireActiveMembership(businessId);
+        return true;
+    } catch (ResponseStatusException exception) {
+        return false;
+    }
+   }
+
+        public boolean isOwner(UUID businessId) {
+        try {
+                requireOwner(businessId);
+                return true;
+        } catch (ResponseStatusException exception) {
+                return false;
+        }
+        }
 }
