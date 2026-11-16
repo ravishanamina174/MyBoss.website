@@ -10,15 +10,17 @@ import { useBusinessRole } from "@/hooks/use-business-role";
 export function MobileNavigation() {
   const pathname = usePathname();
 
-  const role = useBusinessRole();
-  const navigation = role === "OWNER" ? ownerNavigation : staffNavigation;
+  const { role, loading } = useBusinessRole();
+
+  const navigation =
+  role === "OWNER" ? ownerNavigation : staffNavigation;
 
   return (
     <nav
       aria-label="Mobile navigation"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
     >
-      <div className={`mx-auto grid max-w-lg ${role === 'OWNER' ? 'grid-cols-4' : 'grid-cols-3'} px-2 py-2`}>
+      <div className={`grid ${ role === "OWNER" ? "grid-cols-4" : "grid-cols-3"}`}>
         {navigation.map((item) => {
           const Icon = item.icon;
 

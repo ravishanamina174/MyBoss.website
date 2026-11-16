@@ -11,7 +11,7 @@ import { useBusinessRole } from "@/hooks/use-business-role";
 export function Sidebar() {
   const pathname = usePathname();
 
-  const role = useBusinessRole();
+  const { role, loading } = useBusinessRole();
   const navigation = role === "OWNER" ? ownerNavigation : staffNavigation;
 
   return (

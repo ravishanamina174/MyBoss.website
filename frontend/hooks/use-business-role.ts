@@ -1,28 +1,38 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-
 import { api } from "@/lib/api/client";
 import { getActiveBusiness } from "@/lib/business-session";
 
 type BusinessRole = "OWNER" | "STAFF";
 
 export function useBusinessRole() {
-  const { isLoaded, getToken } = useAuth();
+  const { getToken, isLoaded } = useAuth();
   const [role, setRole] = useState<BusinessRole | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoaded) return;
-
     let cancelled = false;
 
     async function loadRole() {
+      if (!isLoaded) return;
+
+      const businessId = getActiveBusiness();
+
+      if (!businessId) {
+        if (!cancelled) {
+          setRole(null);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
-        const businessId = getActiveBusiness();
         const token = await getToken();
 
-        if (!businessId || !token) return;
+        if (!token) throw new Error("Authentication required");
 
         const business = await api.getBusiness(token, businessId);
 
@@ -33,15 +43,20 @@ export function useBusinessRole() {
         if (!cancelled) {
           setRole(null);
         }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
-    void loadRole();
+    setLoading(true);
+    loadRole();
 
     return () => {
       cancelled = true;
     };
-  }, [isLoaded, getToken]);
+  }, [getToken, isLoaded]);
 
-  return role;
+  return { role, loading };
 }
