@@ -18,6 +18,103 @@ export interface BusinessResponse {
   createdAt: string;
 }
 
+export interface BusinessInformationResponse {
+  businessId: string;
+  publicIdentifier: string;
+  name: string;
+  description: string | null;
+  contactEmail: string | null;
+  phoneNumber: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  region: string | null;
+  postalCode: string | null;
+  country: string | null;
+  websiteUrl: string | null;
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  linkedinUrl: string | null;
+  profileImageUrl: string | null;
+  coverImageUrl: string | null;
+  galleryUrls: string[];
+  profilePublished: boolean;
+  card: {
+    description: string | null;
+    contactName: string | null;
+    contactEmail: string | null;
+    phoneNumber: string | null;
+    websiteUrl: string | null;
+    logoUrl: string | null;
+    published: boolean;
+  };
+  updatedAt: string;
+}
+
+export interface PublicBusinessResponse {
+  publicIdentifier: string;
+  name: string;
+  description: string | null;
+  contactEmail: string | null;
+  phoneNumber: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  region: string | null;
+  postalCode: string | null;
+  country: string | null;
+  websiteUrl: string | null;
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  linkedinUrl: string | null;
+  profileImageUrl: string | null;
+  coverImageUrl: string | null;
+  galleryUrls: string[];
+}
+
+export interface PublicCardResponse {
+  publicIdentifier: string;
+  businessName: string;
+  description: string | null;
+  contactName: string | null;
+  contactEmail: string | null;
+  phoneNumber: string | null;
+  websiteUrl: string | null;
+  logoUrl: string | null;
+  facebookUrl: string | null;
+  instagramUrl: string | null;
+  linkedinUrl: string | null;
+}
+
+export interface UpdateBusinessProfileRequest {
+  name: string;
+  description: string;
+  contactEmail: string;
+  phoneNumber: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  region: string;
+  postalCode: string;
+  country: string;
+  websiteUrl: string;
+  facebookUrl: string;
+  instagramUrl: string;
+  linkedinUrl: string;
+  profileImageUrl: string;
+  coverImageUrl: string;
+  galleryUrls: string[];
+}
+
+export interface UpdateBusinessCardRequest {
+  description: string;
+  contactName: string;
+  contactEmail: string;
+  phoneNumber: string;
+  websiteUrl: string;
+  logoUrl: string;
+}
+
 export interface NotificationResponse {
   id: string;
   businessId: string;

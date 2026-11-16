@@ -12,6 +12,11 @@ import type {
   CreateInvitationResponse,
   NotificationPage,
   ReportResponse,
+  BusinessInformationResponse,
+  UpdateBusinessProfileRequest,
+  UpdateBusinessCardRequest,
+  PublicBusinessResponse,
+  PublicCardResponse,
 } from "@/types/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -79,6 +84,61 @@ export const api = {
       `/api/businesses/${encodeURIComponent(businessId)}`,
       token,
       { method: "PATCH", body: JSON.stringify({ name }) }
+    );
+  },
+
+  getBusinessInformation(token: string, businessId: string) {
+    return apiRequest<BusinessInformationResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/information`,
+      token
+    );
+  },
+
+  updateBusinessProfile(
+    token: string,
+    businessId: string,
+    data: UpdateBusinessProfileRequest
+  ) {
+    return apiRequest<BusinessInformationResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/information/profile`,
+      token,
+      { method: "PUT", body: JSON.stringify(data) }
+    );
+  },
+
+  updateBusinessCard(
+    token: string,
+    businessId: string,
+    data: UpdateBusinessCardRequest
+  ) {
+    return apiRequest<BusinessInformationResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/information/card`,
+      token,
+      { method: "PUT", body: JSON.stringify(data) }
+    );
+  },
+
+  setBusinessProfilePublished(
+    token: string,
+    businessId: string,
+    value: boolean
+  ) {
+    return apiRequest<BusinessInformationResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/information/profile/published?value=${value}`,
+      token,
+      { method: "PATCH" }
+    );
+  },
+
+  setBusinessCardPublished(
+    token: string,
+    businessId: string,
+    value: boolean
+  ) {
+    return apiRequest<BusinessInformationResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/information/card/published?value=${value}`,
+      token,
+      { method: "PATCH" }
     );
   },
 
@@ -294,4 +354,35 @@ deleteTask(
       token
     );
   },
+
+  getPublicBusiness(publicIdentifier: string) {
+    return publicApiRequest<PublicBusinessResponse>(
+      `/api/public/businesses/${encodeURIComponent(publicIdentifier)}`
+    );
+  },
+
+  getPublicCard(publicIdentifier: string) {
+    return publicApiRequest<PublicCardResponse>(
+      `/api/public/cards/${encodeURIComponent(publicIdentifier)}`
+    );
+  },
 };
+
+async function publicApiRequest<T>(endpoint: string): Promise<T> {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    let message = "This public page is not available.";
+    try {
+      const error = (await response.json()) as ApiErrorResponse;
+      message = error.message ?? error.error ?? message;
+    } catch {
+      // Use the public-page default.
+    }
+    throw new Error(message);
+  }
+
+  return response.json() as Promise<T>;
+}

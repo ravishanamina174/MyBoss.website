@@ -35,7 +35,7 @@ export const ownerNavigation: NavigationItem[] = [
     icon: BarChart3,
   },
   {
-    label: "Settings",
+    label: "Business info",
     href: "/dashboard/settings",
     icon: Settings,
   },

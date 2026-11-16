@@ -194,7 +194,7 @@ class DatabaseIntegrationTest {
     @Test
     void shouldHaveSuccessfulFlywayMigrations() {
 
-        for (String version : List.of("1", "2")) {
+        for (String version : List.of("1", "2", "3")) {
             Boolean migrationSuccessful = jdbcTemplate.queryForObject(
                     """
                     SELECT success
@@ -211,7 +211,7 @@ class DatabaseIntegrationTest {
 
         assertNotNull(flyway.info().current());
         assertEquals(
-                "2",
+                "3",
                 flyway.info().current().getVersion().getVersion()
         );
     }
