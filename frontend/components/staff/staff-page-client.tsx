@@ -116,7 +116,7 @@ export function StaffPageClient() {
 
   useEffect(() => {
     if (isLoaded) {
-      void loadData();
+      void Promise.resolve().then(() => loadData());
     }
   }, [isLoaded, loadData]);
 

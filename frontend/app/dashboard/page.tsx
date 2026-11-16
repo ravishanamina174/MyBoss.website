@@ -109,7 +109,7 @@ export default function DashboardPage() {
   }, [getToken, isLoaded]);
 
   useEffect(() => {
-    loadDashboard();
+    void Promise.resolve().then(() => loadDashboard());
   }, [loadDashboard]);
 
   if (loading) {

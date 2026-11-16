@@ -50,8 +50,10 @@ export function useBusinessRole() {
       }
     }
 
-    setLoading(true);
-    loadRole();
+    void Promise.resolve().then(() => {
+      setLoading(true);
+      void loadRole();
+    });
 
     return () => {
       cancelled = true;

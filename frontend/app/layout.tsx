@@ -19,11 +19,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "MyBoss | Business Management",
+    default: "MyBoss | Run the business. Own the momentum.",
     template: "%s | MyBoss",
   },
   description:
-    "A simple and powerful business operations platform for small businesses.",
+    "MyBoss gives small business owners one calm, clear place to organize work, lead their team, and make better decisions every day.",
 };
 
 export default function RootLayout({
