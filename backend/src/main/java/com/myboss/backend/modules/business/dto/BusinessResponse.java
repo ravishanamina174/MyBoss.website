@@ -8,5 +8,10 @@ public record BusinessResponse(
         String name,
         String role,
         String status,
+        UUID membershipId,
+        UUID userId,
+        String userEmail,
+        String userFullName,
+        Instant membershipCreatedAt,
         Instant createdAt
 ) {}

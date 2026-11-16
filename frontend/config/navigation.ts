@@ -3,6 +3,7 @@ import {
   ListTodo,
   Users,
   Settings,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 
@@ -27,6 +28,11 @@ export const ownerNavigation: NavigationItem[] = [
     label: "Staff",
     href: "/dashboard/staff",
     icon: Users,
+  },
+  {
+    label: "Reports",
+    href: "/dashboard/reports",
+    icon: BarChart3,
   },
   {
     label: "Settings",

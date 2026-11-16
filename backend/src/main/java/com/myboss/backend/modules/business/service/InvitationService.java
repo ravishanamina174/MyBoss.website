@@ -11,6 +11,7 @@ import com.myboss.backend.modules.business.enums.InvitationStatus;
 import com.myboss.backend.modules.business.repository.BusinessMembershipRepository;
 import com.myboss.backend.modules.business.repository.StaffInvitationRepository;
 import com.myboss.backend.modules.identity.entity.UserEntity;
+import com.myboss.backend.modules.notification.service.NotificationService;
 import com.myboss.backend.service.UserSyncService;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -40,12 +41,14 @@ public class InvitationService {
     private final BusinessAuthorizationService authorizationService;
     private final UserSyncService userSyncService;
     private final String frontendUrl;
+    private final NotificationService notificationService;
 
     public InvitationService(
             StaffInvitationRepository invitationRepository,
             BusinessMembershipRepository membershipRepository,
             BusinessAuthorizationService authorizationService,
             UserSyncService userSyncService,
+            NotificationService notificationService,
             @Value("${app.frontend-url:http://localhost:3000}")
             String frontendUrl
     ) {
@@ -53,6 +56,7 @@ public class InvitationService {
         this.membershipRepository = membershipRepository;
         this.authorizationService = authorizationService;
         this.userSyncService = userSyncService;
+        this.notificationService = notificationService;
         this.frontendUrl = frontendUrl;
     }
 
@@ -97,6 +101,12 @@ public class InvitationService {
                 );
 
         invitationRepository.save(invitation);
+
+        notificationService.create(
+                businessId, owner.getUserId(), "INVITATION_CREATED",
+                "Staff invitation created",
+                "A new staff invitation link is ready to share.",
+                "INVITATION_CREATED:" + invitation.getId(), null, invitation.getId());
 
         String invitationLink =
                 frontendUrl.replaceAll("/+$", "")
@@ -249,6 +259,17 @@ public List<InvitationResponse> getInvitations(UUID businessId) {
         invitation.accept(membership.getId());
 
         invitationRepository.save(invitation);
+
+        BusinessMembershipEntity owner = membershipRepository
+                .findByBusinessIdAndRole(businessId, BusinessRole.OWNER)
+                .orElse(null);
+        if (owner != null) {
+            notificationService.create(
+                    businessId, owner.getUserId(), "INVITATION_ACCEPTED",
+                    "Staff invitation accepted",
+                    "A staff member joined your business.",
+                    "INVITATION_ACCEPTED:" + invitation.getId(), null, invitation.getId());
+        }
 
         return new AcceptInvitationResponse(
                 businessId,

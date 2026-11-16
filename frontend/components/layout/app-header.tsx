@@ -2,16 +2,18 @@
 
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { HelpCircle, Bell } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 
 import { Brand } from "@/components/shared/brand";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Overview",
   "/dashboard/tasks": "Tasks",
   "/dashboard/staff": "Staff",
   "/dashboard/settings": "Settings",
+  "/dashboard/reports": "Reports",
 };
 
 export function AppHeader() {
@@ -39,15 +41,7 @@ export function AppHeader() {
 
       {/* Header actions */}
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-        <button
-          type="button"
-          aria-label="Notifications"
-          title="Notifications"
-          disabled
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground opacity-60"
-        >
-          <Bell className="h-[18px] w-[18px]" />
-        </button>
+        <NotificationBell />
 
         <button
           type="button"

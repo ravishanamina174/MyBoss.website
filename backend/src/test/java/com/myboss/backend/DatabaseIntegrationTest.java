@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Instant;
+import java.util.List;
 import java.util.HexFormat;
 import java.util.UUID;
 
@@ -191,24 +192,26 @@ class DatabaseIntegrationTest {
     }
 
     @Test
-    void shouldHaveSuccessfulFlywayV1Migration() {
+    void shouldHaveSuccessfulFlywayMigrations() {
 
-        Boolean migrationSuccessful = jdbcTemplate.queryForObject(
-                """
-                SELECT success
-                FROM public.flyway_schema_history
-                WHERE version = ?
-                """,
-                Boolean.class,
-                "1"
-        );
+        for (String version : List.of("1", "2")) {
+            Boolean migrationSuccessful = jdbcTemplate.queryForObject(
+                    """
+                    SELECT success
+                    FROM public.flyway_schema_history
+                    WHERE version = ?
+                    """,
+                    Boolean.class,
+                    version
+            );
 
-        assertNotNull(migrationSuccessful);
-        assertTrue(migrationSuccessful);
+            assertNotNull(migrationSuccessful);
+            assertTrue(migrationSuccessful);
+        }
 
         assertNotNull(flyway.info().current());
         assertEquals(
-                "1",
+                "2",
                 flyway.info().current().getVersion().getVersion()
         );
     }

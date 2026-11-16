@@ -1,13 +1,5 @@
-export default function SettingsPage() {
-  return (
-    <section className="space-y-2">
-      <h2 className="text-2xl font-semibold tracking-tight">
-        Settings
-      </h2>
+import { BusinessSettingsClient } from "@/components/settings/business-settings-client";
 
-      <p className="text-sm text-muted-foreground">
-        Manage your business workspace preferences.
-      </p>
-    </section>
-  );
+export default function SettingsPage() {
+  return <BusinessSettingsClient />;
 }

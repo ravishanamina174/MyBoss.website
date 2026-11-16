@@ -20,7 +20,7 @@ export function MobileNavigation() {
       aria-label="Mobile navigation"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
     >
-      <div className={`grid ${ role === "OWNER" ? "grid-cols-4" : "grid-cols-3"}`}>
+      <div className={`grid ${ role === "OWNER" ? "grid-cols-5" : "grid-cols-3"}`}>
         {navigation.map((item) => {
           const Icon = item.icon;
 

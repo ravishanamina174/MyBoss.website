@@ -12,6 +12,7 @@ import com.myboss.backend.modules.task.dto.UpdateTaskRequest;
 import com.myboss.backend.modules.task.entity.TaskEntity;
 import com.myboss.backend.modules.task.enums.TaskStatus;
 import com.myboss.backend.modules.task.repository.TaskRepository;
+import com.myboss.backend.modules.notification.service.NotificationService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,18 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final BusinessMembershipRepository membershipRepository;
     private final BusinessAuthorizationService authorizationService;
+    private final NotificationService notificationService;
 
     public TaskService(
             TaskRepository taskRepository,
             BusinessMembershipRepository membershipRepository,
-            BusinessAuthorizationService authorizationService
+            BusinessAuthorizationService authorizationService,
+            NotificationService notificationService
     ) {
         this.taskRepository = taskRepository;
         this.membershipRepository = membershipRepository;
         this.authorizationService = authorizationService;
+        this.notificationService = notificationService;
     }
 
     // CREATE TASK - OWNER ONLY
@@ -62,7 +66,9 @@ public class TaskService {
                 request.dueAt()
         );
 
-        return toResponse(taskRepository.save(task));
+        TaskEntity savedTask = taskRepository.save(task);
+        notifyAssignment(savedTask, request.assignedToMembershipId(), null);
+        return toResponse(savedTask);
     }
 
     // GET TASK LIST - OWNER OR STAFF
@@ -150,6 +156,7 @@ public class TaskService {
                 request.assignedToMembershipId()
         );
 
+        UUID previousAssignee = task.getAssignedToMembershipId();
         task.updateDetails(
                 request.title().trim(),
                 request.description(),
@@ -157,6 +164,7 @@ public class TaskService {
                 request.dueAt()
         );
 
+        notifyAssignment(task, request.assignedToMembershipId(), previousAssignee);
         return toResponse(task);
     }
 
@@ -190,6 +198,15 @@ public class TaskService {
             );
         }
 
+        BusinessMembershipEntity creator = membershipRepository.findById(
+                task.getCreatedByMembershipId()).orElse(null);
+        if (creator != null) {
+            notificationService.create(
+                    businessId, creator.getUserId(), "TASK_COMPLETED",
+                    "Task completed",
+                    "A staff member completed \"" + task.getTitle() + "\".",
+                    "TASK_COMPLETED:" + task.getId(), task.getId(), null);
+        }
         return toResponse(task);
     }
 
@@ -213,6 +230,18 @@ public class TaskService {
             );
         }
 
+        if (task.getAssignedToMembershipId() != null) {
+            BusinessMembershipEntity assignee = membershipRepository.findById(
+                    task.getAssignedToMembershipId()).orElse(null);
+            if (assignee != null) {
+                notificationService.create(
+                        businessId, assignee.getUserId(), "TASK_ASSIGNMENT_CANCELLED",
+                        "Task cancelled",
+                        "The task \"" + task.getTitle() + "\" was cancelled.",
+                        "TASK_ASSIGNMENT_CANCELLED:" + task.getId(),
+                        task.getId(), null);
+            }
+        }
         return toResponse(task);
     }
 
@@ -273,6 +302,39 @@ public class TaskService {
                     HttpStatus.FORBIDDEN,
                     "You can only access tasks assigned to you"
             );
+        }
+
+    }
+
+    private void notifyAssignment(
+            TaskEntity task,
+            UUID assigneeId,
+            UUID previousAssigneeId
+    ) {
+        if (previousAssigneeId != null && !previousAssigneeId.equals(assigneeId)) {
+            BusinessMembershipEntity previous = membershipRepository.findById(previousAssigneeId)
+                    .orElse(null);
+            if (previous != null) {
+                notificationService.create(
+                        task.getBusinessId(), previous.getUserId(),
+                        "TASK_ASSIGNMENT_CANCELLED", "Task assignment updated",
+                        "The task \"" + task.getTitle() + "\" is no longer assigned to you.",
+                        "TASK_ASSIGNMENT_CANCELLED:" + task.getId() + ":" + previousAssigneeId,
+                        task.getId(), null);
+            }
+        }
+        if (assigneeId == null) return;
+        BusinessMembershipEntity assignee = membershipRepository.findById(assigneeId)
+                .orElse(null);
+        if (assignee != null) {
+            String type = previousAssigneeId == null
+                    ? "TASK_ASSIGNED" : "TASK_ASSIGNMENT_UPDATED";
+            notificationService.create(
+                    task.getBusinessId(), assignee.getUserId(), type,
+                    previousAssigneeId == null ? "New task assigned" : "Task assignment updated",
+                    "You have been assigned \"" + task.getTitle() + "\".",
+                    type + ":" + task.getId() + ":" + assigneeId,
+                    task.getId(), null);
         }
     }
 

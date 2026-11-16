@@ -10,6 +10,8 @@ import type {
   TaskStatus,
   InvitationResponse,
   CreateInvitationResponse,
+  NotificationPage,
+  ReportResponse,
 } from "@/types/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -69,6 +71,14 @@ export const api = {
     return apiRequest<BusinessResponse>(
       `/api/businesses/${encodeURIComponent(businessId)}`,
       token
+    );
+  },
+
+  updateBusiness(token: string, businessId: string, name: string) {
+    return apiRequest<BusinessResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}`,
+      token,
+      { method: "PATCH", body: JSON.stringify({ name }) }
     );
   },
 
@@ -245,6 +255,43 @@ deleteTask(
       `/api/businesses/${encodeURIComponent(businessId)}/staff/${encodeURIComponent(membershipId)}/activate`,
       token,
       { method: "PATCH" }
+    );
+  },
+
+  getNotifications(token: string, businessId: string, page = 0) {
+    return apiRequest<NotificationPage>(
+      `/api/businesses/${encodeURIComponent(businessId)}/notifications?page=${page}&size=20`,
+      token
+    );
+  },
+
+  getUnreadNotificationCount(token: string, businessId: string) {
+    return apiRequest<number>(
+      `/api/businesses/${encodeURIComponent(businessId)}/notifications/unread-count`,
+      token
+    );
+  },
+
+  markNotificationRead(token: string, businessId: string, notificationId: string) {
+    return apiRequest<void>(
+      `/api/businesses/${encodeURIComponent(businessId)}/notifications/${encodeURIComponent(notificationId)}/read`,
+      token,
+      { method: "PATCH" }
+    );
+  },
+
+  markAllNotificationsRead(token: string, businessId: string) {
+    return apiRequest<void>(
+      `/api/businesses/${encodeURIComponent(businessId)}/notifications/read-all`,
+      token,
+      { method: "PATCH" }
+    );
+  },
+
+  getReport(token: string, businessId: string, from: string, to: string) {
+    return apiRequest<ReportResponse>(
+      `/api/businesses/${encodeURIComponent(businessId)}/reports?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+      token
     );
   },
 };

@@ -10,7 +10,47 @@ export interface BusinessResponse {
   name: string;
   role: "OWNER" | "STAFF";
   status: "ACTIVE" | "SUSPENDED";
+  membershipId: string;
+  userId: string;
+  userEmail: string;
+  userFullName: string | null;
+  membershipCreatedAt: string;
   createdAt: string;
+}
+
+export interface NotificationResponse {
+  id: string;
+  businessId: string;
+  type: string;
+  title: string;
+  message: string;
+  relatedTaskId: string | null;
+  relatedInvitationId: string | null;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface NotificationPage {
+  content: NotificationResponse[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}
+
+export interface ReportResponse {
+  totalTasks: number;
+  pendingTasks: number;
+  completedTasks: number;
+  cancelledTasks: number;
+  completionRate: number;
+  activity: { date: string; created: number; completed: number }[];
+  staff: {
+    membershipId: string;
+    name: string;
+    email: string;
+    assigned: number;
+    completed: number;
+  }[];
 }
 
 export interface TaskResponse {

@@ -132,6 +132,11 @@ public class BusinessService {
                 business.getName(),
                 membership.getRole().name(),
                 membership.getStatus().name(),
+                membership.getId(),
+                membership.getUserId(),
+                authorizationService.getCurrentUser().getEmail(),
+                authorizationService.getCurrentUser().getFullName(),
+                membership.getCreatedAt(),
                 business.getCreatedAt()
         );
     }
