@@ -4,6 +4,10 @@ import type {
   UserResponse,
   TaskResponse,
   AcceptInvitationResponse,
+  StaffResponse,
+  CreateTaskRequest,
+  UpdateTaskRequest,
+  TaskStatus
 } from "@/types/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -77,12 +81,105 @@ export const api = {
     );
   },
 
-  getTasks(token: string, businessId: string) {
-    return apiRequest<TaskResponse[]>(
-      `/api/businesses/${encodeURIComponent(businessId)}/tasks`,
-      token
-    );
-  },
+  getTasks(
+  token: string,
+  businessId: string,
+  status?: TaskStatus
+) {
+  const query = status
+    ? `?status=${status}`
+    : "";
+
+  return apiRequest<TaskResponse[]>(
+    `/api/businesses/${encodeURIComponent(businessId)}/tasks${query}`,
+    token
+  );
+},
+
+getTask(
+  token: string,
+  businessId: string,
+  taskId: string
+) {
+  return apiRequest<TaskResponse>(
+    `/api/businesses/${encodeURIComponent(businessId)}/tasks/${encodeURIComponent(taskId)}`,
+    token
+  );
+},
+
+getStaff(token: string, businessId: string) {
+  return apiRequest<StaffResponse[]>(
+    `/api/businesses/${encodeURIComponent(businessId)}/staff`,
+    token
+  );
+},
+
+createTask(
+  token: string,
+  businessId: string,
+  data: CreateTaskRequest
+) {
+  return apiRequest<TaskResponse>(
+    `/api/businesses/${encodeURIComponent(businessId)}/tasks`,
+    token,
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    }
+  );
+},
+
+updateTask(
+  token: string,
+  businessId: string,
+  taskId: string,
+  data: UpdateTaskRequest
+) {
+  return apiRequest<TaskResponse>(
+    `/api/businesses/${encodeURIComponent(businessId)}/tasks/${encodeURIComponent(taskId)}`,
+    token,
+    {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }
+  );
+},
+
+completeTask(
+  token: string,
+  businessId: string,
+  taskId: string
+) {
+  return apiRequest<TaskResponse>(
+    `/api/businesses/${encodeURIComponent(businessId)}/tasks/${encodeURIComponent(taskId)}/complete`,
+    token,
+    { method: "PATCH" }
+  );
+},
+
+cancelTask(
+  token: string,
+  businessId: string,
+  taskId: string
+) {
+  return apiRequest<TaskResponse>(
+    `/api/businesses/${encodeURIComponent(businessId)}/tasks/${encodeURIComponent(taskId)}/cancel`,
+    token,
+    { method: "PATCH" }
+  );
+},
+
+deleteTask(
+  token: string,
+  businessId: string,
+  taskId: string
+) {
+  return apiRequest<void>(
+    `/api/businesses/${encodeURIComponent(businessId)}/tasks/${encodeURIComponent(taskId)}`,
+    token,
+    { method: "DELETE" }
+  );
+},
 
   acceptInvitation(
     token: string,

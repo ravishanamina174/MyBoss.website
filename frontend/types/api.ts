@@ -21,7 +21,7 @@ export interface TaskResponse {
   completedByMembershipId: string | null;
   title: string;
   description: string | null;
-  status: "PENDING" | "COMPLETED" | "CANCELLED";
+  status: TaskStatus;
   dueAt: string | null;
   completedAt: string | null;
   editedAt: string | null;
@@ -48,3 +48,30 @@ export interface ApiErrorResponse {
   message?: string;
   error?: string;
 }
+
+export interface CreateTaskRequest {
+  title: string;
+  description: string | null;
+  assignedToMembershipId: string | null;
+  dueAt: string | null;
+}
+
+export type UpdateTaskRequest = CreateTaskRequest;
+
+export interface StaffResponse {
+  membershipId: string;
+  userId: string;
+  fullName: string | null;
+  email: string;
+  role: string;
+  status: string;
+  joinedAt: string;
+}
+
+export type TaskStatus =
+  | "PENDING"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export type TaskFilter = "ALL" | TaskStatus;
+
