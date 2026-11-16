@@ -397,17 +397,17 @@ export default function TasksPageClient({
   ];
 
   return (
-    <section className="space-y-6 pb-10">
+    <section className="space-y-5 pb-8">
 
       {/* HEADER */}
 
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-[22px] font-semibold tracking-tight">
             {isOwner ? "Tasks" : "My Tasks"}
           </h1>
 
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-[13px] text-muted-foreground">
             {isOwner
               ? "Create, assign and track your business tasks."
               : "View and manage the tasks assigned to you."}
@@ -417,9 +417,9 @@ export default function TasksPageClient({
         {isOwner && (
           <button
             onClick={openCreateDialog}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-medium text-primary-foreground transition hover:bg-primary-hover"
           >
-            <Plus size={17} />
+            <Plus size={14} />
             Create task
           </button>
         )}
@@ -428,7 +428,7 @@ export default function TasksPageClient({
       {/* NOTIFICATIONS */}
 
       {error && !dialogOpen && (
-        <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+        <div className="flex items-start gap-2 rounded-[5px] border border-destructive/30 bg-destructive/5 p-3 text-[13px] text-destructive">
           <AlertCircle size={17} className="mt-0.5 shrink-0" />
           <span>{error}</span>
           <button
@@ -442,7 +442,7 @@ export default function TasksPageClient({
       )}
 
       {notice && (
-        <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
+        <div className="flex items-center justify-between rounded-[5px] border border-success/30 bg-success/5 px-3 py-2.5 text-[13px] text-success">
           <span>{notice}</span>
           <button onClick={() => setNotice("")}>
             <X size={16} />
@@ -459,19 +459,19 @@ export default function TasksPageClient({
           return (
             <div
               key={stat.label}
-              className="rounded-xl border bg-card p-4"
+              className="rounded-lg border border-border bg-card p-3.5"
             >
               <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-[13px] text-muted-foreground">
                   {stat.label}
                 </p>
                 <Icon
-                  size={18}
+                  size={14}
                   className="text-muted-foreground"
                 />
               </div>
 
-              <p className="mt-3 text-2xl font-semibold tabular-nums">
+              <p className="mt-2.5 text-[22px] font-semibold tabular-nums">
                 {stat.value}
               </p>
             </div>
@@ -492,7 +492,7 @@ export default function TasksPageClient({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search tasks..."
-            className="h-10 w-full rounded-lg border bg-background pl-10 pr-3 text-sm outline-none transition focus:border-primary"
+            className="h-9 w-full rounded-[5px] border border-input bg-input-bg pl-10 pr-3 text-[13px] outline-none transition focus:border-primary"
           />
         </div>
 
@@ -501,7 +501,7 @@ export default function TasksPageClient({
           onChange={(event) =>
             setFilter(event.target.value as TaskFilter)
           }
-          className="h-10 rounded-lg border bg-background px-3 text-sm outline-none focus:border-primary"
+          className="h-9 rounded-[5px] border border-input bg-input-bg px-3 text-[13px] outline-none focus:border-primary"
         >
           <option value="ALL">All tasks</option>
           <option value="PENDING">Pending</option>
@@ -518,21 +518,21 @@ export default function TasksPageClient({
           Loading tasks...
         </div>
       ) : filteredTasks.length === 0 ? (
-        <div className="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed px-5 text-center">
-          <div className="mb-3 rounded-full bg-muted p-4">
+        <div className="flex min-h-48 flex-col items-center justify-center rounded-lg border border-dashed border-border px-5 text-center">
+          <div className="mb-2.5 rounded-[5px] bg-muted p-2.5">
             <ClipboardList
-              size={25}
+              size={18}
               className="text-muted-foreground"
             />
           </div>
 
-          <h3 className="font-medium">
+          <h3 className="text-[14px] font-medium">
             {search || filter !== "ALL"
               ? "No matching tasks"
               : "No tasks yet"}
           </h3>
 
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+          <p className="mt-1 max-w-sm text-[13px] text-muted-foreground">
             {search || filter !== "ALL"
               ? "Try changing your search or filter."
               : isOwner
@@ -543,7 +543,7 @@ export default function TasksPageClient({
           {isOwner && !search && filter === "ALL" && (
             <button
               onClick={openCreateDialog}
-              className="mt-4 text-sm font-medium text-primary hover:underline"
+              className="mt-3 text-[13px] font-medium text-primary hover:underline"
             >
               Create your first task
             </button>
@@ -554,38 +554,38 @@ export default function TasksPageClient({
           {filteredTasks.map((task) => (
             <article
               key={task.id}
-              className="rounded-xl border bg-card p-4 transition hover:border-primary/30 sm:p-5"
+              className="rounded-lg border border-border bg-card p-3.5 transition hover:bg-surface-elevated/40 sm:p-4"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold">
+                    <h3 className="text-[14px] font-semibold">
                       {task.title}
                     </h3>
 
                     <TaskStatusBadge status={task.status} />
 
                     {task.editedAt && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-[11px] text-muted-foreground">
                         Edited
                       </span>
                     )}
 
                     {isOverdue(task) && (
-                      <span className="rounded-full bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive">
+                      <span className="rounded-[4px] border border-destructive/30 bg-destructive/10 px-1.5 py-0.5 text-[11px] font-medium text-destructive">
                         Overdue
                       </span>
                     )}
                   </div>
 
                   {task.description && (
-                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                    <p className="mt-1.5 line-clamp-2 text-[13px] text-muted-foreground">
                       {task.description}
                     </p>
                   )}
 
-                  <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5">
                       <CalendarDays size={14} />
                       {formatDate(task.dueAt)}
@@ -603,9 +603,9 @@ export default function TasksPageClient({
                 <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                   <button
                     onClick={() => setSelectedTask(task)}
-                    className="inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium hover:bg-muted"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-2.5 text-[12px] font-medium hover:bg-secondary"
                   >
-                    <Eye size={15} />
+                    <Eye size={14} />
                     Details
                   </button>
 
@@ -613,9 +613,9 @@ export default function TasksPageClient({
                     <>
                       <button
                         onClick={() => openEditDialog(task)}
-                        className="inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium hover:bg-muted"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-2.5 text-[12px] font-medium hover:bg-secondary"
                       >
-                        <Pencil size={14} />
+                        <Pencil size={13} />
                         Edit
                       </button>
 
@@ -624,7 +624,7 @@ export default function TasksPageClient({
                           runTaskAction(task, "cancel")
                         }
                         disabled={actionId === task.id}
-                        className="inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-2.5 text-[12px] font-medium text-muted-foreground hover:bg-secondary disabled:opacity-50"
                       >
                         <Ban size={14} />
                         Cancel
@@ -639,7 +639,7 @@ export default function TasksPageClient({
                       }
                       disabled={actionId === task.id}
                       aria-label="Delete task"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border text-destructive hover:bg-destructive/10 disabled:opacity-50"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-[5px] border border-border text-destructive hover:bg-destructive/10 disabled:opacity-50"
                     >
                       {actionId === task.id ? (
                         <Loader2 size={15} className="animate-spin" />
@@ -655,7 +655,7 @@ export default function TasksPageClient({
                         runTaskAction(task, "complete")
                       }
                       disabled={actionId === task.id}
-                      className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-2.5 text-[12px] font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
                     >
                       {actionId === task.id ? (
                         <Loader2 size={15} className="animate-spin" />
@@ -687,18 +687,18 @@ export default function TasksPageClient({
             role="dialog"
             aria-modal="true"
             aria-labelledby="task-dialog-title"
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border bg-background p-5 shadow-xl sm:p-6"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-border bg-popover p-4 shadow-sm sm:p-5"
           >
             <div className="mb-5 flex items-center justify-between">
               <div>
                 <h2
                   id="task-dialog-title"
-                  className="text-lg font-semibold"
+                  className="text-[16px] font-semibold"
                 >
                   {editingTask ? "Edit task" : "Create task"}
                 </h2>
 
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-0.5 text-[13px] text-muted-foreground">
                   {editingTask
                     ? "Update the task information."
                     : "Add a new task for your team."}
@@ -709,7 +709,7 @@ export default function TasksPageClient({
                 onClick={closeDialog}
                 disabled={saving}
                 aria-label="Close dialog"
-                className="rounded-lg p-2 hover:bg-muted"
+                className="rounded-[5px] p-1.5 hover:bg-secondary"
               >
                 <X size={19} />
               </button>
@@ -719,7 +719,7 @@ export default function TasksPageClient({
               <div>
                 <label
                   htmlFor="task-title"
-                  className="mb-1.5 block text-sm font-medium"
+                  className="mb-1.5 block text-[12px] font-medium"
                 >
                   Task title *
                 </label>
@@ -736,10 +736,10 @@ export default function TasksPageClient({
                     })
                   }
                   placeholder="e.g. Prepare weekly inventory"
-                  className="h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:border-primary"
+                  className="h-9 w-full rounded-[5px] border border-input bg-input-bg px-3 text-[13px] outline-none focus:border-primary"
                 />
 
-                <p className="mt-1 text-right text-xs text-muted-foreground">
+                <p className="mt-1 text-right text-[11px] text-muted-foreground">
                   {form.title.length}/200
                 </p>
               </div>
@@ -747,7 +747,7 @@ export default function TasksPageClient({
               <div>
                 <label
                   htmlFor="task-description"
-                  className="mb-1.5 block text-sm font-medium"
+                  className="mb-1.5 block text-[12px] font-medium"
                 >
                   Description
                 </label>
@@ -763,14 +763,14 @@ export default function TasksPageClient({
                     })
                   }
                   placeholder="Add additional task details..."
-                  className="w-full resize-y rounded-lg border bg-background p-3 text-sm outline-none focus:border-primary"
+                  className="w-full resize-y rounded-[5px] border border-input bg-input-bg p-3 text-[13px] outline-none focus:border-primary"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="task-assignee"
-                  className="mb-1.5 block text-sm font-medium"
+                  className="mb-1.5 block text-[12px] font-medium"
                 >
                   Assign to
                 </label>
@@ -784,7 +784,7 @@ export default function TasksPageClient({
                       assignedToMembershipId: event.target.value,
                     })
                   }
-                  className="h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:border-primary"
+                  className="h-9 w-full rounded-[5px] border border-input bg-input-bg px-3 text-[13px] outline-none focus:border-primary"
                 >
                   <option value="">Unassigned</option>
 
@@ -808,7 +808,7 @@ export default function TasksPageClient({
               <div>
                 <label
                   htmlFor="task-due-date"
-                  className="mb-1.5 block text-sm font-medium"
+                  className="mb-1.5 block text-[12px] font-medium"
                 >
                   Due date
                 </label>
@@ -823,7 +823,7 @@ export default function TasksPageClient({
                       dueAt: event.target.value,
                     })
                   }
-                  className="h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:border-primary"
+                  className="h-9 w-full rounded-[5px] border border-input bg-input-bg px-3 text-[13px] outline-none focus:border-primary"
                 />
               </div>
 
@@ -838,7 +838,7 @@ export default function TasksPageClient({
                   type="button"
                   onClick={closeDialog}
                   disabled={saving}
-                  className="h-10 rounded-lg border px-4 text-sm font-medium hover:bg-muted disabled:opacity-50"
+                  className="h-9 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -846,7 +846,7 @@ export default function TasksPageClient({
                 <button
                   type="submit"
                   disabled={saving || !form.title.trim()}
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+                  className="inline-flex h-9 items-center justify-center gap-2 rounded-[5px] bg-primary px-4 text-[13px] font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
                 >
                   {saving && (
                     <Loader2 size={15} className="animate-spin" />
@@ -875,7 +875,7 @@ export default function TasksPageClient({
             role="dialog"
             aria-modal="true"
             aria-labelledby="task-details-title"
-            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border bg-background p-5 shadow-xl sm:p-6"
+            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-lg border border-border bg-popover p-4 shadow-sm sm:p-5"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -883,7 +883,7 @@ export default function TasksPageClient({
 
                 <h2
                   id="task-details-title"
-                  className="mt-3 text-xl font-semibold"
+                  className="mt-2.5 text-[18px] font-semibold"
                 >
                   {selectedTask.title}
                 </h2>
@@ -892,7 +892,7 @@ export default function TasksPageClient({
               <button
                 onClick={() => setSelectedTask(null)}
                 aria-label="Close details"
-                className="rounded-lg p-2 hover:bg-muted"
+                className="rounded-[5px] p-1.5 hover:bg-secondary"
               >
                 <X size={19} />
               </button>
@@ -971,7 +971,7 @@ export default function TasksPageClient({
                     setSelectedTask(null);
                     openEditDialog(task);
                   }}
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-sm hover:bg-muted"
+                  className="inline-flex h-8 items-center gap-2 rounded-[5px] border border-border px-3 text-[13px] hover:bg-secondary"
                 >
                   <Pencil size={14} />
                   Edit
@@ -984,7 +984,7 @@ export default function TasksPageClient({
                     runTaskAction(selectedTask, "complete")
                   }
                   disabled={actionId === selectedTask.id}
-                  className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-3 text-sm text-primary-foreground disabled:opacity-50"
+                  className="inline-flex h-8 items-center gap-2 rounded-[5px] bg-primary px-3 text-[13px] text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
                 >
                   <Check size={15} />
                   Complete task
@@ -993,7 +993,7 @@ export default function TasksPageClient({
 
               <button
                 onClick={() => setSelectedTask(null)}
-                className="h-9 rounded-lg border px-4 text-sm hover:bg-muted"
+                className="h-8 rounded-[5px] border border-border px-3 text-[13px] hover:bg-secondary"
               >
                 Close
               </button>

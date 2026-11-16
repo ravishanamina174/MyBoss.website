@@ -229,9 +229,9 @@ export function BusinessInformationClient() {
 
   if (!information || !businessId) {
     return (
-      <section className="rounded-xl border border-dashed p-8 text-center">
-        <p className="text-sm text-destructive">{error || "Business information is unavailable."}</p>
-        <button type="button" onClick={() => void load()} className="mt-4 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm">
+      <section className="rounded-lg border border-dashed border-border p-6 text-center">
+        <p className="text-[13px] text-destructive">{error || "Business information is unavailable."}</p>
+        <button type="button" onClick={() => void load()} className="mt-3 inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] hover:bg-secondary">
           <RefreshCw className="h-4 w-4" /> Try again
         </button>
       </section>
@@ -243,23 +243,23 @@ export function BusinessInformationClient() {
   const cardUrl = `/card/${information.publicIdentifier}`;
 
   return (
-    <section className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <section className="space-y-5">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-medium text-primary">Business information</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">Tell the world what you do</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">Manage your public business page and shareable digital card. Only owners can edit or publish them.</p>
+          <p className="text-[12px] font-medium text-primary">Business information</p>
+          <h1 className="mt-0.5 text-[22px] font-semibold tracking-tight">Tell the world what you do</h1>
+          <p className="mt-1 max-w-2xl text-[13px] text-muted-foreground">Manage your public business page and shareable digital card. Only owners can edit or publish them.</p>
         </div>
-        <span className="w-fit rounded-full bg-muted px-3 py-1 text-xs font-medium">{isOwner ? "Owner access" : "View only"}</span>
+        <span className="w-fit rounded-[4px] border border-border bg-secondary px-2 py-0.5 text-[11px] font-medium">{isOwner ? "Owner access" : "View only"}</span>
       </div>
 
       {(error || notice) && (
-        <div role={error ? "alert" : "status"} className={`rounded-lg border px-4 py-3 text-sm ${error ? "border-destructive/30 text-destructive" : "border-border"}`}>
+        <div role={error ? "alert" : "status"} className={`rounded-[5px] border px-3 py-2.5 text-[13px] ${error ? "border-destructive/30 text-destructive" : "border-border"}`}>
           {error || notice}
         </div>
       )}
 
-      <form onSubmit={saveProfile} className="space-y-6 rounded-xl border bg-card p-5 sm:p-6">
+      <form onSubmit={saveProfile} className="space-y-5 rounded-lg border border-border bg-card p-4 sm:p-5">
         <SectionHeading title="Business profile" description="This information appears on your public business page after you publish it." />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Business name" value={profile.name} disabled={!isOwner} required onChange={(value) => setProfile({ ...profile, name: value })} />
@@ -270,7 +270,7 @@ export function BusinessInformationClient() {
         </div>
 
         <div>
-          <h3 className="mb-3 text-sm font-semibold">Address</h3>
+          <h3 className="mb-3 text-[13px] font-semibold">Address</h3>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Address line 1" value={profile.addressLine1} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, addressLine1: value })} />
             <Field label="Address line 2" value={profile.addressLine2} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, addressLine2: value })} />
@@ -282,8 +282,8 @@ export function BusinessInformationClient() {
         </div>
 
         <div>
-          <h3 className="mb-3 text-sm font-semibold">Brand images</h3>
-          <p className="mb-3 text-xs text-muted-foreground">Use secure image URLs from your preferred image host. Upload storage is not configured in this workspace.</p>
+          <h3 className="mb-3 text-[13px] font-semibold">Brand images</h3>
+          <p className="mb-3 text-[12px] text-muted-foreground">Use secure image URLs from your preferred image host. Upload storage is not configured in this workspace.</p>
           <div className="grid gap-4 sm:grid-cols-2">
             <ImageField label="Profile image / logo URL" value={profile.profileImageUrl} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, profileImageUrl: value })} />
             <ImageField label="Cover image URL" value={profile.coverImageUrl} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, coverImageUrl: value })} />
@@ -291,15 +291,15 @@ export function BusinessInformationClient() {
         </div>
 
         <div>
-          <div className="mb-3 flex items-center justify-between"><div><h3 className="text-sm font-semibold">Gallery</h3><p className="text-xs text-muted-foreground">{profile.galleryUrls.length}/8 images</p></div>{isOwner && profile.galleryUrls.length < 8 && <button type="button" onClick={() => setProfile({ ...profile, galleryUrls: [...profile.galleryUrls, ""] })} className="inline-flex items-center gap-1 text-xs font-semibold text-primary"><Plus className="h-4 w-4" /> Add image</button>}</div>
+          <div className="mb-3 flex items-center justify-between"><div><h3 className="text-[13px] font-semibold">Gallery</h3><p className="text-[12px] text-muted-foreground">{profile.galleryUrls.length}/8 images</p></div>{isOwner && profile.galleryUrls.length < 8 && <button type="button" onClick={() => setProfile({ ...profile, galleryUrls: [...profile.galleryUrls, ""] })} className="inline-flex items-center gap-1 text-[12px] font-semibold text-primary"><Plus className="h-3.5 w-3.5" /> Add image</button>}</div>
           <div className="space-y-2">
-            {profile.galleryUrls.map((url, index) => <div key={`${index}-${url}`} className="flex gap-2"><input type="url" value={url} disabled={!isOwner} onChange={(event) => { const galleryUrls = [...profile.galleryUrls]; galleryUrls[index] = event.target.value; setProfile({ ...profile, galleryUrls }); }} placeholder="https://images.example.com/photo.jpg" className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-primary disabled:opacity-60" />{isOwner && <button type="button" aria-label="Remove gallery image" onClick={() => setProfile({ ...profile, galleryUrls: profile.galleryUrls.filter((_, itemIndex) => itemIndex !== index) })} className="rounded-lg border px-3 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></button>}</div>)}
-            {profile.galleryUrls.length === 0 && <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground"><ImagePlus className="mx-auto mb-2 h-5 w-5" />Add up to eight gallery image URLs.</div>}
+            {profile.galleryUrls.map((url, index) => <div key={`${index}-${url}`} className="flex gap-2"><input type="url" value={url} disabled={!isOwner} onChange={(event) => { const galleryUrls = [...profile.galleryUrls]; galleryUrls[index] = event.target.value; setProfile({ ...profile, galleryUrls }); }} placeholder="https://images.example.com/photo.jpg" className="h-9 min-w-0 flex-1 rounded-[5px] border border-input bg-input-bg px-3 text-[13px] outline-none focus:border-primary disabled:opacity-60" />{isOwner && <button type="button" aria-label="Remove gallery image" onClick={() => setProfile({ ...profile, galleryUrls: profile.galleryUrls.filter((_, itemIndex) => itemIndex !== index) })} className="rounded-[5px] border border-border px-2.5 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>}</div>)}
+            {profile.galleryUrls.length === 0 && <div className="rounded-[5px] border border-dashed border-border p-5 text-center text-[13px] text-muted-foreground"><ImagePlus className="mx-auto mb-2 h-4 w-4" />Add up to eight gallery image URLs.</div>}
           </div>
         </div>
 
         <div>
-          <h3 className="mb-3 text-sm font-semibold">Social links</h3>
+          <h3 className="mb-3 text-[13px] font-semibold">Social links</h3>
           <div className="grid gap-4 sm:grid-cols-3">
             <Field label="Facebook URL" type="url" value={profile.facebookUrl} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, facebookUrl: value })} />
             <Field label="Instagram URL" type="url" value={profile.instagramUrl} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, instagramUrl: value })} />
@@ -307,14 +307,14 @@ export function BusinessInformationClient() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 border-t pt-4">
-          {isOwner && <button type="submit" disabled={saving !== null} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50">{saving === "profile" && <LoaderCircle className="h-4 w-4 animate-spin" />}Save business information</button>}
-          <a href={businessUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium"><ExternalLink className="h-4 w-4" />Preview page</a>
-          {isOwner && <button type="button" onClick={() => void setPublished("profile", !information.profilePublished)} disabled={publishing !== null} className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium disabled:opacity-50">{publishing === "profile" && <LoaderCircle className="h-4 w-4 animate-spin" />}{information.profilePublished ? "Unpublish page" : "Publish page"}</button>}
-          {information.profilePublished && <button type="button" onClick={() => void copyLink("business")} className="inline-flex items-center gap-2 text-sm font-medium text-primary"><Copy className="h-4 w-4" />Copy link</button>}
+          {isOwner && <button type="submit" disabled={saving !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50">{saving === "profile" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}Save business information</button>}
+          <a href={businessUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"><ExternalLink className="h-3.5 w-3.5" />Preview page</a>
+          {isOwner && <button type="button" onClick={() => void setPublished("profile", !information.profilePublished)} disabled={publishing !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary disabled:opacity-50">{publishing === "profile" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}{information.profilePublished ? "Unpublish page" : "Publish page"}</button>}
+          {information.profilePublished && <button type="button" onClick={() => void copyLink("business")} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-primary"><Copy className="h-3.5 w-3.5" />Copy link</button>}
         </div>
       </form>
 
-      <form onSubmit={saveCard} className="space-y-5 rounded-xl border bg-card p-5 sm:p-6">
+      <form onSubmit={saveCard} className="space-y-5 rounded-lg border border-border bg-card p-4 sm:p-5">
         <SectionHeading title="Digital business card" description="Your card has its own publishing switch and public link." />
         <div className="grid gap-4 sm:grid-cols-2">
           <TextArea label="Short description" value={card.description} disabled={!isOwner} rows={3} onChange={(value) => setCard({ ...card, description: value })} />
@@ -326,10 +326,10 @@ export function BusinessInformationClient() {
         </div>
         <CardPreview information={information} card={card} />
         <div className="flex flex-wrap items-center gap-3 border-t pt-4">
-          {isOwner && <button type="submit" disabled={saving !== null} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50">{saving === "card" && <LoaderCircle className="h-4 w-4 animate-spin" />}Save card</button>}
-          <a href={cardUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium"><ExternalLink className="h-4 w-4" />Full view</a>
-          {isOwner && <button type="button" onClick={() => void setPublished("card", !information.card.published)} disabled={publishing !== null} className="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium disabled:opacity-50">{publishing === "card" && <LoaderCircle className="h-4 w-4 animate-spin" />}{information.card.published ? "Unpublish card" : "Publish card"}</button>}
-          {information.card.published && <button type="button" onClick={() => void copyLink("card")} className="inline-flex items-center gap-2 text-sm font-medium text-primary"><Copy className="h-4 w-4" />Copy card link</button>}
+          {isOwner && <button type="submit" disabled={saving !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50">{saving === "card" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}Save card</button>}
+          <a href={cardUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"><ExternalLink className="h-3.5 w-3.5" />Full view</a>
+          {isOwner && <button type="button" onClick={() => void setPublished("card", !information.card.published)} disabled={publishing !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary disabled:opacity-50">{publishing === "card" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}{information.card.published ? "Unpublish card" : "Publish card"}</button>}
+          {information.card.published && <button type="button" onClick={() => void copyLink("card")} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-primary"><Copy className="h-3.5 w-3.5" />Copy card link</button>}
         </div>
       </form>
     </section>
@@ -337,22 +337,22 @@ export function BusinessInformationClient() {
 }
 
 function SectionHeading({ title, description }: { title: string; description: string }) {
-  return <div><h2 className="font-semibold">{title}</h2><p className="mt-1 text-sm text-muted-foreground">{description}</p></div>;
+  return <div><h2 className="text-[14px] font-semibold">{title}</h2><p className="mt-1 text-[13px] text-muted-foreground">{description}</p></div>;
 }
 
 function Field({ label, value, onChange, disabled, type = "text", placeholder, required = false }: { label: string; value: string; onChange: (value: string) => void; disabled: boolean; type?: string; placeholder?: string; required?: boolean }) {
-  return <label className="block space-y-2 text-sm font-medium">{label}<input required={required} type={type} placeholder={placeholder} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-normal outline-none focus:border-primary disabled:opacity-60" /></label>;
+  return <label className="block space-y-1.5 text-[12px] font-medium">{label}<input required={required} type={type} placeholder={placeholder} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="h-9 w-full rounded-[5px] border border-input bg-input-bg px-3 text-[13px] font-normal outline-none focus:border-primary disabled:opacity-60" /></label>;
 }
 
 function TextArea({ label, value, onChange, disabled, rows }: { label: string; value: string; onChange: (value: string) => void; disabled: boolean; rows: number }) {
-  return <label className="block space-y-2 text-sm font-medium">{label}<textarea rows={rows} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="w-full resize-y rounded-lg border border-input bg-background px-3 py-2 text-sm font-normal outline-none focus:border-primary disabled:opacity-60" /></label>;
+  return <label className="block space-y-1.5 text-[12px] font-medium">{label}<textarea rows={rows} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="w-full resize-y rounded-[5px] border border-input bg-input-bg px-3 py-2 text-[13px] font-normal outline-none focus:border-primary disabled:opacity-60" /></label>;
 }
 
 function ImageField({ label, value, onChange, disabled }: { label: string; value: string; onChange: (value: string) => void; disabled: boolean }) {
-  return <div className="space-y-2"><Field label={label} type="url" value={value} disabled={disabled} placeholder="https://images.example.com/image.jpg" onChange={onChange} />{value && <div className="relative h-24 overflow-hidden rounded-lg border bg-muted"><Image src={value} alt="" fill sizes="400px" unoptimized className="object-cover" /></div>}</div>;
+  return <div className="space-y-2"><Field label={label} type="url" value={value} disabled={disabled} placeholder="https://images.example.com/image.jpg" onChange={onChange} />{value && <div className="relative h-24 overflow-hidden rounded-[5px] border border-border bg-muted"><Image src={value} alt="" fill sizes="400px" unoptimized className="object-cover" /></div>}</div>;
 }
 
 function CardPreview({ information, card }: { information: BusinessInformationResponse; card: UpdateBusinessCardRequest }) {
   const logo = card.logoUrl || information.profileImageUrl;
-  return <div className="max-w-xl rounded-2xl bg-[#202124] p-5 text-white shadow-xl"><div className="flex items-start gap-4">{logo ? <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white/10"><Image src={logo} alt="" fill sizes="56px" unoptimized className="object-cover" /></div> : <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#e51b36] text-xl font-bold">{information.name.charAt(0)}</div>}<div><p className="text-lg font-semibold">{information.name}</p><p className="mt-1 text-sm text-white/65">{card.description || "Your short business description will appear here."}</p></div></div><div className="mt-5 grid gap-2 text-sm text-white/80 sm:grid-cols-2">{card.contactName && <span>Contact: {card.contactName}</span>}{card.phoneNumber && <span>{card.phoneNumber}</span>}{card.contactEmail && <span>{card.contactEmail}</span>}{card.websiteUrl && <span>{card.websiteUrl}</span>}</div></div>;
+  return <div className="max-w-xl rounded-lg border border-border bg-surface-elevated p-4"><div className="flex items-start gap-3">{logo ? <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[5px] bg-secondary"><Image src={logo} alt="" fill sizes="48px" unoptimized className="object-cover" /></div> : <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[5px] bg-primary text-base font-semibold text-primary-foreground">{information.name.charAt(0)}</div>}<div><p className="text-[15px] font-semibold">{information.name}</p><p className="mt-1 text-[13px] text-muted-foreground">{card.description || "Your short business description will appear here."}</p></div></div><div className="mt-4 grid gap-1.5 text-[13px] text-muted-foreground sm:grid-cols-2">{card.contactName && <span>Contact: {card.contactName}</span>}{card.phoneNumber && <span>{card.phoneNumber}</span>}{card.contactEmail && <span>{card.contactEmail}</span>}{card.websiteUrl && <span>{card.websiteUrl}</span>}</div></div>;
 }

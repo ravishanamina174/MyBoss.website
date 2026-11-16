@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ownerNavigation ,staffNavigation } from "@/config/navigation";
+import { ownerNavigation, staffNavigation } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 
 import { useBusinessRole } from "@/hooks/use-business-role";
@@ -13,14 +13,16 @@ export function MobileNavigation() {
   const { role } = useBusinessRole();
 
   const navigation =
-  role === "OWNER" ? ownerNavigation : staffNavigation;
+    role === "OWNER" ? ownerNavigation : staffNavigation;
 
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden"
+      className="sticky top-[108px] z-20 overflow-hidden border-b border-border bg-sidebar/95 backdrop-blur-md lg:hidden"
     >
-      <div className={`grid ${ role === "OWNER" ? "grid-cols-5" : "grid-cols-3"}`}>
+      <div
+        className="mobile-nav-scrollbar flex w-full min-w-0 gap-1 overflow-x-auto px-3 py-3"
+      >
         {navigation.map((item) => {
           const Icon = item.icon;
 
@@ -35,13 +37,13 @@ export function MobileNavigation() {
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex min-h-14 flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium transition-colors",
+                "flex h-11 shrink-0 items-center gap-2 rounded-xl px-4 text-[14px] font-semibold transition-colors",
                 isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-foreground text-background"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
               )}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-[18px] w-[18px]" />
               <span>{item.label}</span>
             </Link>
           );

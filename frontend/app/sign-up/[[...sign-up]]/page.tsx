@@ -1,8 +1,12 @@
 import { SignUp } from "@clerk/nextjs";
+import { Brand } from "@/components/shared/brand";
 
 export default function SignUpPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background p-4">
+    <main className="relative flex min-h-screen items-center justify-center bg-background p-4 sm:p-8">
+      <div className="absolute left-5 top-5 sm:left-8 sm:top-8">
+        <Brand href="/" />
+      </div>
       <SignUp fallbackRedirectUrl="/onboarding" />
     </main>
   );

@@ -281,9 +281,9 @@ export function StaffPageClient() {
 
   if (business?.role !== "OWNER") {
     return (
-      <section className="rounded-xl border border-border bg-card p-6">
-        <h1 className="text-xl font-semibold">Staff management</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+      <section className="rounded-lg border border-border bg-card p-5">
+        <h1 className="text-[18px] font-semibold">Staff management</h1>
+        <p className="mt-2 text-[13px] text-muted-foreground">
           {error || "This page is available to business owners only."}
         </p>
       </section>
@@ -291,13 +291,13 @@ export function StaffPageClient() {
   }
 
   return (
-    <section className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <section className="space-y-5">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-[22px] font-semibold tracking-tight">
             Staff management
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-[13px] text-muted-foreground">
             Manage your team and staff invitations for {business.name}.
           </p>
         </div>
@@ -305,7 +305,7 @@ export function StaffPageClient() {
         <button
           type="button"
           onClick={() => void loadData()}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border px-3 text-sm font-medium transition hover:bg-secondary"
+          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium transition hover:bg-secondary"
         >
           <RefreshCw className="h-4 w-4" />
           Refresh
@@ -315,7 +315,7 @@ export function StaffPageClient() {
       {error && (
         <div
           role="alert"
-          className="flex items-start justify-between gap-3 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+          className="flex items-start justify-between gap-3 rounded-[5px] border border-destructive/20 bg-destructive/5 px-3 py-2.5 text-[13px] text-destructive"
         >
           <span>{error}</span>
           <button
@@ -331,7 +331,7 @@ export function StaffPageClient() {
       {notice && (
         <div
           role="status"
-          className="flex items-start justify-between gap-3 rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm"
+          className="flex items-start justify-between gap-3 rounded-[5px] border border-border bg-secondary/50 px-3 py-2.5 text-[13px]"
         >
           <span>{notice}</span>
           <button
@@ -362,11 +362,11 @@ export function StaffPageClient() {
         />
       </div>
 
-      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-5">
+      <section className="space-y-4 rounded-lg border border-border bg-card p-4">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
-            <h2 className="font-semibold">Invite staff</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <h2 className="text-[14px] font-semibold">Invite staff</h2>
+            <p className="mt-1 text-[13px] text-muted-foreground">
               Create a secure invitation link valid for 24 hours.
               A new link replaces the previous pending invitation.
             </p>
@@ -376,7 +376,7 @@ export function StaffPageClient() {
             type="button"
             onClick={() => void createInvitation()}
             disabled={creatingInvitation}
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+            className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground transition hover:bg-primary-hover disabled:opacity-50"
           >
             {creatingInvitation ? (
               <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -388,7 +388,7 @@ export function StaffPageClient() {
         </div>
 
         {invitationLink && (
-          <div className="space-y-3 rounded-lg border border-border bg-background p-3">
+          <div className="space-y-3 rounded-[5px] border border-border bg-background p-3">
             <div className="flex items-center gap-2 text-sm font-medium">
               <Mail className="h-4 w-4 text-muted-foreground" />
               New invitation link
@@ -399,14 +399,14 @@ export function StaffPageClient() {
                 readOnly
                 value={invitationLink.invitationLink}
                 aria-label="Invitation link"
-                className="h-10 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 text-xs outline-none"
+                className="h-9 min-w-0 flex-1 rounded-[5px] border border-input bg-input-bg px-3 text-[12px] outline-none"
               />
               <button
                 type="button"
                 onClick={() =>
                   void copyInvitation(invitationLink.invitationLink)
                 }
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border px-3 text-sm font-medium hover:bg-secondary"
+                className="inline-flex h-9 items-center justify-center gap-2 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"
               >
                 {copied ? (
                   <Check className="h-4 w-4" />
@@ -445,7 +445,7 @@ export function StaffPageClient() {
                     void revokeInvitation(invitation.id)
                   }
                   disabled={busyInvitationId === invitation.id}
-                  className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border px-3 text-sm font-medium hover:bg-background disabled:opacity-50"
+                  className="inline-flex h-8 items-center justify-center gap-2 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-background disabled:opacity-50"
                 >
                   {busyInvitationId === invitation.id ? (
                     <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -460,11 +460,11 @@ export function StaffPageClient() {
         )}
       </section>
 
-      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-5">
+      <section className="space-y-4 rounded-lg border border-border bg-card p-4">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
-            <h2 className="font-semibold">Your team</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <h2 className="text-[14px] font-semibold">Your team</h2>
+            <p className="mt-1 text-[13px] text-muted-foreground">
               View and manage your business staff members.
             </p>
           </div>
@@ -476,7 +476,7 @@ export function StaffPageClient() {
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search name or email..."
               aria-label="Search staff"
-              className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm outline-none focus:border-primary"
+              className="h-9 w-full rounded-[5px] border border-input bg-input-bg pl-9 pr-3 text-[13px] outline-none focus:border-primary"
             />
           </div>
         </div>
@@ -487,7 +487,7 @@ export function StaffPageClient() {
               key={value}
               type="button"
               onClick={() => setFilter(value)}
-              className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
+              className={`rounded-[5px] px-2.5 py-1.5 text-[12px] font-medium transition ${
                 filter === value
                   ? "bg-primary text-primary-foreground"
                   : "border border-border text-muted-foreground hover:bg-secondary"
@@ -503,14 +503,14 @@ export function StaffPageClient() {
         </div>
 
         {filteredStaff.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border px-4 py-12 text-center">
-            <Users className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-3 text-sm font-medium">
+          <div className="rounded-[5px] border border-dashed border-border px-4 py-8 text-center">
+            <Users className="mx-auto h-5 w-5 text-muted-foreground" />
+            <p className="mt-2.5 text-[13px] font-medium">
               {staff.length === 0
                 ? "No staff members yet"
                 : "No matching staff members"}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-[13px] text-muted-foreground">
               {staff.length === 0
                 ? "Generate an invitation link to add your first staff member."
                 : "Try changing your search or filter."}
@@ -524,12 +524,12 @@ export function StaffPageClient() {
                 className="flex flex-col justify-between gap-3 py-4 sm:flex-row sm:items-center"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-[12px] font-semibold text-accent-foreground">
                     {getStaffName(member).charAt(0).toUpperCase()}
                   </div>
 
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">
+                    <p className="truncate text-[13px] font-semibold">
                       {getStaffName(member)}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
@@ -543,10 +543,10 @@ export function StaffPageClient() {
 
                 <div className="flex items-center gap-3 sm:justify-end">
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                    className={`inline-flex items-center gap-1.5 rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px] font-medium ${
                       member.status === "ACTIVE"
-                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                        : "bg-muted text-muted-foreground"
+                        ? "text-success"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {member.status}
@@ -556,7 +556,7 @@ export function StaffPageClient() {
                     type="button"
                     onClick={() => void updateStaffStatus(member)}
                     disabled={busyMembershipId === member.membershipId}
-                    className="inline-flex h-9 min-w-28 items-center justify-center gap-2 rounded-lg border border-border px-3 text-xs font-medium transition hover:bg-secondary disabled:opacity-50"
+                    className="inline-flex h-8 min-w-24 items-center justify-center gap-2 rounded-[5px] border border-border px-3 text-[12px] font-medium transition hover:bg-secondary disabled:opacity-50"
                   >
                     {busyMembershipId === member.membershipId ? (
                       <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -586,12 +586,12 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-lg border border-border bg-card p-3.5">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="text-[13px] text-muted-foreground">{label}</p>
         <span className="text-muted-foreground">{icon}</span>
       </div>
-      <p className="mt-3 text-2xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-2.5 text-[22px] font-semibold tabular-nums">{value}</p>
     </div>
   );
 }

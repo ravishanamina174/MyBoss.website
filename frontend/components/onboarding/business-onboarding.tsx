@@ -116,7 +116,7 @@ export function BusinessOnboarding() {
     <main className="flex min-h-[80vh] items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg space-y-7">
         <div className="space-y-2 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
             <Building2 className="h-7 w-7" />
           </div>
 
@@ -141,9 +141,9 @@ export function BusinessOnboarding() {
                 key={business.id}
                 type="button"
                 onClick={() => selectBusiness(business)}
-                className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-accent/40"
+                className="flex w-full items-center gap-3 rounded-[10px] border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary/50 hover:bg-accent/40"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-sm font-semibold text-accent-foreground">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent text-sm font-semibold text-accent-foreground">
                   {business.name.charAt(0).toUpperCase()}
                 </div>
 

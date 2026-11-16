@@ -65,39 +65,106 @@ export function BusinessSettingsClient() {
   }
 
   if (!isLoaded || loading) {
-    return <div className="flex min-h-[40vh] items-center justify-center"><LoaderCircle className="h-6 w-6 animate-spin" /></div>;
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <LoaderCircle className="h-5 w-5 animate-spin" />
+      </div>
+    );
   }
   if (!business) {
-    return <section className="rounded-xl border p-6"><p className="text-sm text-destructive">{error}</p><button className="mt-4 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm" onClick={() => void load()}><RefreshCw className="h-4 w-4" />Try again</button></section>;
+    return (
+      <section className="rounded-lg border border-border p-5">
+        <p className="text-[13px] text-destructive">{error}</p>
+        <button
+          className="mt-3 inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] hover:bg-secondary"
+          onClick={() => void load()}
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          Try again
+        </button>
+      </section>
+    );
   }
 
   const isOwner = business.role === "OWNER";
   return (
-    <section className="max-w-3xl space-y-6">
+    <section className="max-w-3xl space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Business settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">View your workspace profile and membership.</p>
+        <h1 className="text-[22px] font-semibold tracking-tight">Business settings</h1>
+        <p className="mt-0.5 text-[13px] text-muted-foreground">
+          View your workspace profile and membership.
+        </p>
       </div>
-      {(error || message) && <div role={error ? "alert" : "status"} className={`rounded-lg border px-4 py-3 text-sm ${error ? "border-destructive/30 text-destructive" : "border-border"}`}>{error || message}</div>}
-      <section className="space-y-4 rounded-xl border bg-card p-5">
-        <div>
-          <h2 className="font-semibold">Business profile</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Only the business owner can edit this information.</p>
+      {(error || message) && (
+        <div
+          role={error ? "alert" : "status"}
+          className={`rounded-[5px] border px-3 py-2.5 text-[13px] ${error ? "border-destructive/30 text-destructive" : "border-border"}`}
+        >
+          {error || message}
         </div>
-        <label className="block space-y-2 text-sm font-medium">
+      )}
+      <section className="space-y-4 rounded-lg border border-border bg-card p-4">
+        <div>
+          <h2 className="text-[14px] font-semibold">Business profile</h2>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Only the business owner can edit this information.
+          </p>
+        </div>
+        <label className="block space-y-1.5 text-[12px] font-medium">
           Business name
-          <input value={name} onChange={(event) => setName(event.target.value)} disabled={!isOwner || saving} maxLength={150} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-normal outline-none focus:border-primary disabled:opacity-60" />
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            disabled={!isOwner || saving}
+            maxLength={150}
+            className="h-9 w-full rounded-[5px] border border-input bg-input-bg px-3 text-[13px] font-normal outline-none focus:border-primary disabled:opacity-60"
+          />
         </label>
-        {isOwner ? <div className="flex gap-2"><button onClick={() => void save()} disabled={saving} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">{saving && <LoaderCircle className="h-4 w-4 animate-spin" />}Save changes</button><button onClick={() => setName(business.name)} disabled={saving} className="rounded-lg border px-4 py-2 text-sm font-medium">Cancel</button></div> : <p className="text-sm text-muted-foreground">Staff members have view-only access.</p>}
+        {isOwner ? (
+          <div className="flex gap-2">
+            <button
+              onClick={() => void save()}
+              disabled={saving}
+              className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50"
+            >
+              {saving && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}
+              Save changes
+            </button>
+            <button
+              onClick={() => setName(business.name)}
+              disabled={saving}
+              className="h-8 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <p className="text-[13px] text-muted-foreground">Staff members have view-only access.</p>
+        )}
       </section>
-      <section className="rounded-xl border bg-card p-5">
-        <h2 className="font-semibold">Your account and membership</h2>
-        <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
-          <div><dt className="text-muted-foreground">Name</dt><dd className="mt-1 font-medium">{business.userFullName || "Not provided"}</dd></div>
-          <div><dt className="text-muted-foreground">Email</dt><dd className="mt-1 font-medium">{business.userEmail}</dd></div>
-          <div><dt className="text-muted-foreground">Role</dt><dd className="mt-1 font-medium">{business.role}</dd></div>
-          <div><dt className="text-muted-foreground">Membership status</dt><dd className="mt-1 font-medium">{business.status}</dd></div>
-          <div><dt className="text-muted-foreground">Member since</dt><dd className="mt-1 font-medium">{new Date(business.membershipCreatedAt).toLocaleDateString()}</dd></div>
+      <section className="rounded-lg border border-border bg-card p-4">
+        <h2 className="text-[14px] font-semibold">Your account and membership</h2>
+        <dl className="mt-4 grid gap-4 text-[13px] sm:grid-cols-2">
+          <div>
+            <dt className="text-[12px] text-muted-foreground">Name</dt>
+            <dd className="mt-1 font-medium">{business.userFullName || "Not provided"}</dd>
+          </div>
+          <div>
+            <dt className="text-[12px] text-muted-foreground">Email</dt>
+            <dd className="mt-1 font-medium">{business.userEmail}</dd>
+          </div>
+          <div>
+            <dt className="text-[12px] text-muted-foreground">Role</dt>
+            <dd className="mt-1 font-medium">{business.role}</dd>
+          </div>
+          <div>
+            <dt className="text-[12px] text-muted-foreground">Membership status</dt>
+            <dd className="mt-1 font-medium">{business.status}</dd>
+          </div>
+          <div>
+            <dt className="text-[12px] text-muted-foreground">Member since</dt>
+            <dd className="mt-1 font-medium">{new Date(business.membershipCreatedAt).toLocaleDateString()}</dd>
+          </div>
         </dl>
       </section>
     </section>

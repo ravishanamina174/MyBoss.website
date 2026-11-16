@@ -12,7 +12,7 @@ const pageTitles: Record<string, string> = {
   "/dashboard": "Overview",
   "/dashboard/tasks": "Tasks",
   "/dashboard/staff": "Staff",
-  "/dashboard/settings": "Settings",
+  "/dashboard/settings": "Business info",
   "/dashboard/reports": "Reports",
 };
 
@@ -26,21 +26,47 @@ export function AppHeader() {
       : "MyBoss");
 
   return (
-    <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur-lg sm:px-6 lg:px-8">
-      {/* Mobile brand */}
-      <div className="flex items-center gap-3 lg:hidden">
-        <Brand collapsed />
-        <div className="h-7 w-px bg-border" />
-        <h1 className="text-sm font-semibold">{title}</h1>
+    <header className="sticky top-0 z-30 flex h-[108px] items-end border-b border-border bg-header px-4 pb-4 pt-5 sm:px-5 lg:h-[52px] lg:items-center lg:justify-between lg:px-6 lg:py-0">
+      <div className="flex w-full items-center justify-between lg:hidden">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Brand collapsed />
+          <div className="min-w-0">
+            <p className="truncate text-[12px] leading-4 text-muted-foreground">
+              myboss
+            </p>
+            <h1 className="truncate text-[15px] font-semibold leading-5">
+              {title}
+            </h1>
+          </div>
+        </div>
+
+        <div className="ml-3 flex shrink-0 items-center gap-0.5">
+          <NotificationBell />
+          <button
+            type="button"
+            aria-label="Help"
+            title="Help"
+            disabled
+            className="hidden h-8 w-8 items-center justify-center rounded-[5px] text-muted-foreground opacity-60 min-[380px]:flex"
+          >
+            <HelpCircle className="h-4 w-4" />
+          </button>
+          <ThemeToggle />
+          <div className="ml-1 border-l border-border pl-2">
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "h-7 w-7",
+                },
+              }}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Desktop page title */}
-      <h1 className="hidden text-base font-semibold lg:block">
-        {title}
-      </h1>
+      <h1 className="hidden text-[13px] font-semibold lg:block">{title}</h1>
 
-      {/* Header actions */}
-      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+      <div className="ml-auto hidden items-center gap-0.5 lg:flex">
         <NotificationBell />
 
         <button
@@ -48,18 +74,18 @@ export function AppHeader() {
           aria-label="Help"
           title="Help"
           disabled
-          className="hidden h-9 w-9 items-center justify-center rounded-lg text-muted-foreground opacity-60 sm:flex"
+          className="hidden h-8 w-8 items-center justify-center rounded-[5px] text-muted-foreground opacity-60 sm:flex"
         >
-          <HelpCircle className="h-[18px] w-[18px]" />
+          <HelpCircle className="h-3.5 w-3.5" />
         </button>
 
         <ThemeToggle />
 
-        <div className="ml-1 border-l border-border pl-3">
+        <div className="ml-1.5 border-l border-border pl-2.5">
           <UserButton
             appearance={{
               elements: {
-                avatarBox: "h-9 w-9",
+                avatarBox: "h-7 w-7",
               },
             }}
           />

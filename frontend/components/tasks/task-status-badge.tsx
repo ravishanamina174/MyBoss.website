@@ -1,13 +1,15 @@
-
 import type { TaskStatus } from "@/types/api";
 
 const styles: Record<TaskStatus, string> = {
-  PENDING:
-    "bg-amber-500/10 text-amber-700 dark:text-amber-400",
-  COMPLETED:
-    "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-  CANCELLED:
-    "bg-muted text-muted-foreground",
+  PENDING: "text-warning",
+  COMPLETED: "text-success",
+  CANCELLED: "text-muted-foreground",
+};
+
+const dots: Record<TaskStatus, string> = {
+  PENDING: "bg-warning",
+  COMPLETED: "bg-success",
+  CANCELLED: "bg-muted-foreground",
 };
 
 const labels: Record<TaskStatus, string> = {
@@ -23,8 +25,9 @@ export function TaskStatusBadge({
 }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${styles[status]}`}
+      className={`inline-flex items-center gap-1.5 rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px] font-medium ${styles[status]}`}
     >
+      <span className={`h-1.5 w-1.5 rounded-full ${dots[status]}`} />
       {labels[status]}
     </span>
   );

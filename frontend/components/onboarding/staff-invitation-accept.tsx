@@ -71,7 +71,7 @@ export function StaffInvitationAccept({
   return (
     <main className="flex min-h-[80vh] items-center justify-center px-4 py-12">
       <section className="w-full max-w-md space-y-6 rounded-xl border border-border bg-card p-6 text-center sm:p-8">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
           <Users className="h-7 w-7" />
         </div>
 

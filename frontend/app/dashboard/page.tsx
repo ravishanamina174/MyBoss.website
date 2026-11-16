@@ -49,14 +49,14 @@ function StatCard({
   icon: typeof Activity;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-5">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <Icon className="h-5 w-5 text-muted-foreground" />
+        <p className="text-[13px] font-medium text-muted-foreground">{title}</p>
+        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
       </div>
 
-      <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+      <p className="mt-3 text-[22px] font-semibold tracking-tight tabular-nums">{value}</p>
+      <p className="mt-1 text-[12px] text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -114,42 +114,42 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="space-y-2">
-          <div className="h-7 w-48 animate-pulse rounded bg-muted" />
-          <div className="h-4 w-64 animate-pulse rounded bg-muted" />
+          <div className="h-5 w-40 animate-pulse rounded-[5px] bg-muted" />
+          <div className="h-3.5 w-56 animate-pulse rounded-[5px] bg-muted" />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="h-32 animate-pulse rounded-xl border bg-muted/40"
+              className="h-24 animate-pulse rounded-lg border border-border bg-muted/40"
             />
           ))}
         </div>
 
-        <div className="h-64 animate-pulse rounded-xl border bg-muted/40" />
+        <div className="h-52 animate-pulse rounded-lg border border-border bg-muted/40" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center">
-        <AlertCircle className="mb-3 h-8 w-8 text-destructive" />
+      <div className="flex min-h-[240px] flex-col items-center justify-center rounded-lg border border-dashed border-border p-6 text-center">
+        <AlertCircle className="mb-2.5 h-5 w-5 text-destructive" />
 
-        <h2 className="text-lg font-semibold">Unable to load dashboard</h2>
+        <h2 className="text-[16px] font-semibold">Unable to load dashboard</h2>
 
-        <p className="mt-2 max-w-md text-sm text-muted-foreground">
+        <p className="mt-1.5 max-w-md text-[13px] text-muted-foreground">
           {error ?? "Something went wrong while loading your business data."}
         </p>
 
         <button
           onClick={loadDashboard}
-          className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          className="mt-4 inline-flex h-8 items-center gap-2 rounded-[5px] bg-primary px-3 text-[13px] font-medium text-primary-foreground hover:bg-primary-hover"
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-3.5 w-3.5" />
           Try again
         </button>
       </div>
@@ -181,56 +181,56 @@ export default function DashboardPage() {
   const isOwner = business.role === "OWNER";
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[12px] text-muted-foreground">
             {isOwner ? "Business overview" : "Your workspace"}
           </p>
 
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          <h1 className="mt-0.5 text-[22px] font-semibold tracking-tight">
             {business.name}
           </h1>
 
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-[13px] text-muted-foreground">
             Welcome to your MyBoss dashboard.
           </p>
         </div>
 
         <button
           onClick={loadDashboard}
-          className="inline-flex w-fit items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted"
+          className="inline-flex h-8 w-fit items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-3.5 w-3.5" />
           Refresh
         </button>
       </div>
 
       {/* Business information */}
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-          <BriefcaseBusiness className="h-5 w-5" />
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-secondary">
+          <BriefcaseBusiness className="h-4 w-4" />
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="font-medium">{business.name}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[13px] font-medium">{business.name}</p>
+          <p className="text-[12px] text-muted-foreground">
             {isOwner ? "Business Owner" : "Staff Member"} ·{" "}
             {business.status}
           </p>
         </div>
 
-        <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium">
+        <span className="rounded-[4px] border border-border bg-secondary px-2 py-0.5 text-[11px] font-medium">
           {business.role}
         </span>
       </div>
 
       {/* Statistics */}
       <section>
-        <h2 className="mb-4 text-lg font-semibold">Overview</h2>
+        <h2 className="mb-3 text-[16px] font-semibold">Overview</h2>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
             title="Total Tasks"
             value={tasks.length}
@@ -273,66 +273,75 @@ export default function DashboardPage() {
       </section>
 
       {/* Recent tasks */}
-      <section className="rounded-xl border bg-card">
-        <div className="flex items-center justify-between border-b p-5">
+      <section className="rounded-lg border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div>
-            <h2 className="font-semibold">Recent Tasks</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <h2 className="text-[14px] font-semibold">Recent Tasks</h2>
+            <p className="mt-0.5 text-[12px] text-muted-foreground">
               Latest tasks in your business
             </p>
           </div>
 
           <Link
             href="/dashboard/tasks"
-            className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            className="inline-flex items-center gap-1 text-[13px] font-medium text-primary hover:underline"
           >
-            View all <ArrowRight className="h-4 w-4" />
+            View all <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
         {recentTasks.length === 0 ? (
-          <div className="px-5 py-12 text-center">
-            <Activity className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
-            <p className="font-medium">No tasks yet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
+          <div className="px-4 py-8 text-center">
+            <Activity className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
+            <p className="text-[13px] font-medium">No tasks yet</p>
+            <p className="mt-1 text-[13px] text-muted-foreground">
               Tasks will appear here when they are created.
             </p>
 
             {isOwner && (
               <Link
                 href="/dashboard/tasks"
-                className="mt-4 inline-flex text-sm font-medium text-primary hover:underline"
+                className="mt-3 inline-flex text-[13px] font-medium text-primary hover:underline"
               >
                 Go to task management
               </Link>
             )}
           </div>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y divide-border">
             {recentTasks.map((task) => (
               <div
                 key={task.id}
-                className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">
+                  <p className="truncate text-[13px] font-medium">
                     {task.title}
                   </p>
 
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="mt-0.5 text-[12px] text-muted-foreground">
                     Created {formatDate(task.createdAt)}
                   </p>
                 </div>
 
                 <span
-                  className={`w-fit rounded-full px-2.5 py-1 text-xs font-medium ${
+                  className={`inline-flex w-fit items-center gap-1.5 rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px] font-medium ${
                     task.status === "COMPLETED"
-                      ? "bg-green-500/10 text-green-700 dark:text-green-400"
+                      ? "text-success"
                       : task.status === "CANCELLED"
-                        ? "bg-muted text-muted-foreground"
-                        : "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                        ? "text-muted-foreground"
+                        : "text-warning"
                   }`}
                 >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      task.status === "COMPLETED"
+                        ? "bg-success"
+                        : task.status === "CANCELLED"
+                          ? "bg-muted-foreground"
+                          : "bg-warning"
+                    }`}
+                  />
                   {task.status}
                 </span>
               </div>
@@ -343,48 +352,48 @@ export default function DashboardPage() {
 
       {/* Owner staff overview */}
       {isOwner && (
-        <section className="rounded-xl border bg-card">
-          <div className="flex items-center justify-between border-b p-5">
+        <section className="rounded-lg border border-border bg-card">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <div>
-              <h2 className="font-semibold">Team Overview</h2>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <h2 className="text-[14px] font-semibold">Team Overview</h2>
+              <p className="mt-0.5 text-[12px] text-muted-foreground">
                 Your business staff members
               </p>
             </div>
 
             <Link
               href="/dashboard/staff"
-              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-primary hover:underline"
             >
-              Manage staff <ArrowRight className="h-4 w-4" />
+              Manage staff <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
           {staff.length === 0 ? (
-            <div className="px-5 py-10 text-center">
-              <Users className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
-              <p className="font-medium">No staff members yet</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+            <div className="px-4 py-8 text-center">
+              <Users className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
+              <p className="text-[13px] font-medium">No staff members yet</p>
+              <p className="mt-1 text-[13px] text-muted-foreground">
                 Invite staff members to start managing your team.
               </p>
             </div>
           ) : (
-            <div className="divide-y">
+            <div className="divide-y divide-border">
               {staff.slice(0, 5).map((member) => (
                 <div
                   key={member.membershipId}
-                  className="flex items-center justify-between gap-3 px-5 py-3"
+                  className="flex items-center justify-between gap-3 px-4 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
+                    <p className="truncate text-[13px] font-medium">
                       {member.fullName || member.email}
                     </p>
-                    <p className="truncate text-xs text-muted-foreground">
+                    <p className="truncate text-[12px] text-muted-foreground">
                       {member.email}
                     </p>
                   </div>
 
-                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs">
+                  <span className="rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px]">
                     {member.status}
                   </span>
                 </div>
