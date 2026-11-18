@@ -93,3 +93,8 @@
 @media (max-width: 560px) {
   .workspace-notifications { position: fixed; top: calc(var(--workspace-bar-height) - 4px); right: 12px; left: 12px; width: auto; }
 }
+
+:is(.workspace-sidebar, .workspace-mobile-nav) a[href="/dashboard/tasks"] svg { color: var(--tone-amber); }
+:is(.workspace-sidebar, .workspace-mobile-nav) a[href="/dashboard/staff"] svg { color: var(--tone-indigo); }
+:is(.workspace-sidebar, .workspace-mobile-nav) a[href="/dashboard/reports"] svg { color: var(--tone-green); }
+:is(.workspace-sidebar, .workspace-mobile-nav) a[href="/dashboard/settings"] svg { color: var(--tone-clay); }

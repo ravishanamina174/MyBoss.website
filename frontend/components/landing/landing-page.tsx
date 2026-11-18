@@ -1,247 +1,153 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
-import { useState, type ReactNode } from "react";
-import {
-  ArrowDown, ArrowRight, ArrowUpRight, BarChart3, BellRing, Building2,
-  Check, ClipboardCheck, Menu, ShieldCheck, Store, Users, X,
-} from "lucide-react";
-
+import { useRef, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, BarChart3, Check, ChevronDown,
+  ClipboardList, DoorOpen, Leaf, Menu, Store, Sun, Users, X } from "lucide-react";
 import { Brand } from "@/components/shared/brand";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { HeroFilm } from "./hero-film";
 import "./landing.css";
 
-const navigation = [
-  ["Why MyBoss", "#why"],
-  ["Features", "#features"],
-  ["How it works", "#how-it-works"],
-  ["Pricing", "#pricing"],
+const productLinks = [
+  { name: "Tasks", href: "#tour", icon: ClipboardList, color: "peach" },
+  { name: "Team", href: "#team", icon: Users, color: "lilac" },
+  { name: "Reports", href: "#reports", icon: BarChart3, color: "mint" },
+  { name: "Business profile", href: "#profile", icon: Store, color: "blue" },
 ];
 
-const features = [
-  {
-    icon: ClipboardCheck, title: "Task management", tone: "blue",
-    description: "Set priorities, assign work and see what’s due in one place.",
-  },
-  {
-    icon: Users, title: "Team management", tone: "green",
-    description: "Invite staff and give each person access to the work they’re responsible for.",
-  },
-  {
-    icon: BarChart3, title: "Reports", tone: "indigo",
-    description: "Review task activity and completions to see how work is moving.",
-  },
-  {
-    icon: BellRing, title: "Notifications", tone: "amber",
-    description: "Keep up with assignments, completions and other changes as they happen.",
-  },
-  {
-    icon: Store, title: "Business profile", tone: "clay",
-    description: "Publish a business page and a digital business card you can share with customers.",
-  },
-  {
-    icon: ShieldCheck, title: "Role-based access", tone: "slate",
-    description: "Owners manage the workspace. Staff see the tools they need for their work.",
-  },
-];
-
-const steps = [
-  ["Register your business", "Create your workspace with your business name."],
-  ["Add your first tasks", "Write down the work and set due dates so priorities are clear."],
-  ["Invite your staff", "Share an invitation link to bring the team into your workspace."],
-  ["Track what gets done", "Follow task updates and check reports to see how the team is doing."],
-];
-
-const exampleTasks = [
-  ["Check stock before opening", "Done"],
-  ["Confirm the weekend roster", "Pending"],
-  ["Review the supplier delivery", "Pending"],
-];
-
-function DashboardLink({ children, className, onClick }: {
-  children: ReactNode;
-  className?: string;
-  onClick?: () => void;
-}) {
+function DashboardLink({ children = "Open Dashboard", className }: { children?: ReactNode; className?: string }) {
   const { isLoaded, isSignedIn } = useAuth();
   const href = isLoaded && isSignedIn ? "/onboarding" : "/sign-in?redirect_url=%2Fonboarding";
-  return <Link href={href} className={className} onClick={onClick}>{children}</Link>;
+  return <Link className={className} href={href}>{children}</Link>;
 }
 
-function LandingHeader() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const closeMenu = () => setMenuOpen(false);
-
+function Header() {
+  const [open, setOpen] = useState<"product" | "mobile" | null>(null);
+  const productToggle = useRef<HTMLButtonElement>(null);
+  const menuToggle = useRef<HTMLButtonElement>(null);
+  const close = () => setOpen(null);
   return (
-    <header className="marketing-header" onKeyDown={(event) => {
-      if (event.key === "Escape" && menuOpen) {
-        closeMenu();
-        event.currentTarget.querySelector<HTMLButtonElement>(".marketing-menu-toggle")?.focus();
+    <header className="site-head" onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) close();
+    }} onKeyDown={(event) => {
+      if (open && event.key === "Escape") {
+        (open === "mobile" ? menuToggle : productToggle).current?.focus();
+        close();
       }
     }}>
-      <div className="marketing-wrap marketing-header-row">
-        <Brand href="/" className="marketing-brand" />
-        <nav className="marketing-desktop-nav" aria-label="Main navigation">
-          {navigation.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+      <div className="head-row">
+        <Brand href="/" />
+        <nav aria-label="Main" className="desktop-links">
+          <button ref={productToggle} type="button" aria-expanded={open === "product"} aria-controls="product-menu"
+            onClick={() => setOpen(open === "product" ? null : "product")}>Product <ChevronDown size={15} /></button>
+          <a href="#how-it-works" onClick={close}>How it works</a><a href="#pricing" onClick={close}>Pricing</a>
         </nav>
-        <div className="marketing-actions">
-          <ThemeToggle />
-          <Link className="marketing-signin" href="/sign-in">Sign in</Link>
-          <DashboardLink className="marketing-button marketing-button-outline marketing-desktop-cta">
-            Open dashboard <ArrowUpRight size={16} />
-          </DashboardLink>
-          <button
-            type="button"
-            className="marketing-menu-toggle"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-controls="marketing-mobile-nav"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+        <div className="head-actions"><Link href="/sign-in" className="sign-link">Sign in</Link>
+          <DashboardLink className="action primary" />
+          <button ref={menuToggle} type="button" className="mobile-toggle" aria-label={open === "mobile" ? "Close navigation" : "Open navigation"}
+            aria-expanded={open === "mobile"} aria-controls="mobile-menu" onClick={() => setOpen(open === "mobile" ? null : "mobile")}>
+            {open === "mobile" ? <X /> : <Menu />}</button>
         </div>
       </div>
-      <nav
-        className="marketing-mobile-nav marketing-wrap"
-        aria-label="Mobile navigation"
-        id="marketing-mobile-nav"
-        hidden={!menuOpen}
-      >
-        {navigation.map(([label, href]) => <a key={href} href={href} onClick={closeMenu}>{label}</a>)}
-        <Link href="/sign-in" onClick={closeMenu}>Sign in</Link>
-        <DashboardLink className="marketing-button marketing-button-blue" onClick={closeMenu}>Open dashboard <ArrowUpRight size={16} /></DashboardLink>
+      <nav id="product-menu" className="product-menu" aria-label="Product" hidden={open !== "product"}>
+        {productLinks.map(({ name, href, color, icon: Icon }) => <a key={name} href={href} onClick={close}><i className={color}><Icon size={19} /></i>{name}</a>)}
+      </nav>
+      <nav id="mobile-menu" className="mobile-menu" aria-label="Mobile" hidden={open !== "mobile"}>
+        {productLinks.map(({ name, href }) => <a key={name} href={href} onClick={close}>{name}<ArrowUpRight size={16} /></a>)}
+        <a href="#how-it-works" onClick={close}>How it works</a><a href="#pricing" onClick={close}>Pricing</a>
+        <Link href="/sign-in" onClick={close}>Sign in</Link>
       </nav>
     </header>
   );
 }
 
-function TaskPreview() {
+function ProductStories() {
   return (
-    <figure className="marketing-preview">
-      <figcaption className="preview-chrome">
-        <span><ClipboardCheck size={18} /> Tasks</span>
-        <small>Example workspace</small>
-      </figcaption>
-      <div className="preview-list">
-        {exampleTasks.map(([task, status]) => (
-          <div className="preview-task" key={task}>
-            <span className={status === "Done" ? "preview-check is-done" : "preview-check"} aria-hidden="true">
-              {status === "Done" && <Check size={13} />}
-            </span>
-            <span>{task}</span>
-            <span className={status === "Done" ? "preview-status is-done" : "preview-status"}>{status}</span>
+    <section className="stories page-width" id="features">
+      <h2>The work behind<br />your workday.</h2>
+      <div className="story-grid">
+        <article className="story team-story" id="team">
+          <span className="category"><Users size={18} /> Team management</span>
+          <h3>Put a name to every task.</h3><p>Invite your staff, assign work, and give each person a clear view of what’s theirs.</p>
+          <div className="paper team-paper" aria-label="Example team assignments">
+            <strong>On the floor</strong>
+            {[["M", "Maya", "Front display", "peach"], ["J", "Jules", "Till count", "lilac"], ["A", "Anu", "Delivery", "blue"]].map(([letter, name, task, color]) => (
+              <div className="person" key={name}><i className={color}>{letter}</i><b>{name}</b><span>{task}</span></div>
+            ))}
           </div>
-        ))}
+        </article>
+        <article className="story report-story" id="reports">
+          <span className="category"><BarChart3 size={18} /> Activity reports</span>
+          <h3>See how the week went.</h3><p>Follow tasks created and completed over time. Spot the days your team has more on its plate.</p>
+          <div className="paper chart-paper" role="img" aria-label="Example weekly report with created and completed tasks for five days">
+            <strong>Task activity</strong>
+            <div className="chart-key"><span>Created</span><span>Completed</span></div>
+            <div className="chart">{[[52, 34], [64, 43], [47, 58], [85, 68], [71, 83]].map(([a, b], index) =>
+              <div key={index}><span><i style={{height: a}} /><i style={{height: b}} /></span><small>{["Mon", "Tue", "Wed", "Thu", "Fri"][index]}</small></div>)}</div>
+          </div>
+        </article>
+        <article className="story profile-story" id="profile">
+          <div><span className="category"><Store size={18} /> Public profile</span>
+            <h3>Give customers<br />your calling card.</h3>
+            <p>Publish your business details and share a digital card with the people who need to find you.</p></div>
+          <div className="profile-example"><span className="card-awning" aria-hidden="true" />
+            <Store size={28} strokeWidth={1.6} /><strong>Maple Street Market</strong><span>Groceries &amp; fresh produce</span>
+            <div><Leaf size={16} /> Independent grocer</div>
+          </div>
+        </article>
       </div>
-    </figure>
+    </section>
   );
 }
 
+const steps = [
+  ["Create your workspace", "Register your business and choose the workspace you want to manage.", Store, "blue"],
+  ["Bring your team in", "Share an invitation link so staff can join and see their assignments.", Users, "lilac"],
+  ["Assign the first task", "Choose an owner, set a due date, and follow the task through to completion.", Check, "mint"],
+] as const;
+
 export function LandingPage() {
   return (
-    <div className="marketing" id="top">
-      <a className="marketing-skip sr-only focus:not-sr-only" href="#main-content">Skip to content</a>
-      <LandingHeader />
+    <div className="mb-site" id="top">
+      <a className="skip-site" href="#main-content">Skip to content</a>
+      <Header />
       <main id="main-content" tabIndex={-1}>
-        <div className="marketing-wrap hero-wrap">
-          <section className="marketing-hero" aria-labelledby="hero-title">
+        <section className="intro" aria-labelledby="hero-title">
+          <div className="intro-copy">
+            <h1 id="hero-title">Small team.<br />Big <span className="headline-chip"><Sun aria-hidden="true" />plans.</span></h1>
+            <p>Run the day together. Organize tasks, coordinate staff, and track progress in one small-business workspace.</p>
+            <div className="intro-actions"><DashboardLink className="action primary" /><a className="action secondary" href="#tour">See it in action <ArrowDown size={16} /></a></div>
+          </div>
+          <div className="showcase">
+            <Image className="margin-art owner-art" src="/media/shop-owner.webp" width={230} height={340} alt="" />
+            <Image className="margin-art crew-art" src="/media/shop-crew.webp" width={230} height={340} alt="" />
             <HeroFilm />
-            <div className="hero-copy">
-              <p className="hero-label">The small business workspace</p>
-              <h1 id="hero-title">Keep your business<br className="hero-break" /> moving.</h1>
-              <p className="hero-summary">Assign tasks, coordinate your team, and see what’s getting done. All from one workspace.</p>
-              <div className="hero-actions">
-                <DashboardLink className="marketing-button marketing-button-white">Open your workspace <ArrowUpRight size={17} /></DashboardLink>
-                <a href="#features" className="marketing-button marketing-button-glass">Explore features <ArrowDown size={16} /></a>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <section id="why" className="marketing-wrap marketing-section why-section">
-          <div className="section-copy">
-            <p className="section-label">Why MyBoss</p>
-            <h2>See what needs<br className="hero-break" /> your attention.</h2>
-            <p>Give your team a shared view of the work. Know who’s handling each task, what’s due, and what’s already done.</p>
-          </div>
-          <TaskPreview />
-        </section>
-
-        <section id="features" className="feature-section">
-          <div className="marketing-wrap marketing-section">
-            <div className="section-copy">
-              <p className="section-label">Features</p>
-              <h2>Tools for the workday.</h2>
-            </div>
-            <div className="marketing-feature-grid">
-              {features.map(({ icon: Icon, title, description, tone }) => (
-                <article className="marketing-feature" key={title}>
-                  <span className="marketing-feature-icon" data-tone={tone}><Icon size={22} strokeWidth={1.75} /></span>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
-                </article>
-              ))}
-            </div>
           </div>
         </section>
-
-        <section id="how-it-works" className="steps-section">
-          <div className="marketing-wrap marketing-section">
-            <div className="section-copy">
-              <p className="section-label">How it works</p>
-              <h2>From setup<br className="hero-break" /> to the first task.</h2>
-              <DashboardLink className="marketing-button marketing-button-white">Get started <ArrowUpRight size={17} /></DashboardLink>
-            </div>
-            <ol className="marketing-steps">
-              {steps.map(([title, description], index) => (
-                <li key={title}>
-                  <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                  <div><h3>{title}</h3><p>{description}</p></div>
-                </li>
-              ))}
-            </ol>
-          </div>
+        <ProductStories />
+        <section className="setup page-width" id="how-it-works">
+          <div><h2>From opening up<br />to closing time.</h2><p>Set up your workspace in three steps.</p></div>
+          <ol>{steps.map(([title, detail, Icon, color], index) => <li key={title}>
+            <i className={color}><Icon size={21} /></i><div><small>Step {index + 1}</small><h3>{title}</h3><p>{detail}</p></div>
+          </li>)}</ol>
         </section>
-
-        <section id="pricing" className="marketing-wrap marketing-section pricing-section">
-          <div className="section-copy">
-            <p className="section-label">Pricing</p>
-            <h2>Explore MyBoss today.</h2>
-            <p>Workspace pricing is coming soon. You can explore MyBoss now without making a payment.</p>
-          </div>
-          <DashboardLink className="marketing-button marketing-button-blue">Open dashboard <ArrowUpRight size={17} /></DashboardLink>
+        <section className="pricing page-width" id="pricing">
+          <div><span className="category"><DoorOpen size={19} /> Workspace access</span>
+            <h2>Ready for your next shift?</h2><p>Explore MyBoss without a payment today. Pricing details are coming soon.</p></div>
+          <DashboardLink className="action primary">Open Dashboard <ArrowRight size={17} /></DashboardLink>
         </section>
       </main>
-
-      <footer className="marketing-footer">
-        <div className="marketing-wrap">
-          <div className="marketing-footer-callout">
-            <div><Building2 size={24} aria-hidden="true" /><h2>Bring your team into one workspace.</h2></div>
-            <DashboardLink className="marketing-button marketing-button-white">Open your workspace <ArrowRight size={17} /></DashboardLink>
+      <footer className="site-footer">
+        <div className="page-width footer-inner">
+          <div className="footer-links"><div className="footer-note"><Brand href="/" /><p>The everyday workspace<br />for small businesses.</p></div>
+            <nav aria-label="Product links"><h3>Product</h3>{productLinks.map(({ name, href }) => <a key={name} href={href}>{name}</a>)}</nav>
+            <nav aria-label="Explore"><h3>Explore</h3><a href="#tour">Product film</a><a href="#how-it-works">How it works</a><a href="#pricing">Pricing</a></nav>
+            <nav aria-label="Workspace"><h3>Workspace</h3><DashboardLink /><Link href="/sign-in">Sign in</Link><Link href="/sign-up">Create an account</Link></nav>
           </div>
-          <div className="marketing-footer-main">
-            <div>
-              <Brand href="/" className="marketing-brand" />
-              <p>Tasks, people, and progress in one place for small businesses.</p>
-            </div>
-            <nav aria-label="Platform">
-              <h3>Platform</h3>
-              {navigation.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
-            </nav>
-            <nav aria-label="Account">
-              <h3>Account</h3>
-              <Link href="/sign-in">Sign in</Link>
-              <Link href="/sign-up">Create an account</Link>
-              <DashboardLink>Open dashboard</DashboardLink>
-            </nav>
-          </div>
-          <div className="marketing-footer-bottom">
-            <span>© {new Date().getFullYear()} MyBoss</span>
-            <a href="#top">Back to top <ArrowUpRight size={14} /></a>
-          </div>
+          <Brand href="/" className="footer-signature" />
+          <div className="footer-base"><span>© {new Date().getFullYear()} MyBoss</span><a href="#top">Back to top <ArrowUp size={14} /></a></div>
         </div>
       </footer>
     </div>

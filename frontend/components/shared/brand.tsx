@@ -1,9 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { useSyncExternalStore } from "react";
 
 type BrandProps = {
   collapsed?: boolean;
@@ -11,49 +7,14 @@ type BrandProps = {
   href?: string;
 };
 
-const subscribe = () => () => {};
-const getSnapshot = () => true;
-const getServerSnapshot = () => false;
-
-export function Brand({
-  collapsed = false,
-  className = "",
-  href = "/dashboard",
-}: BrandProps) {
-  const { resolvedTheme } = useTheme();
-
-  const mounted = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
-  );
-
-  const logo =
-    mounted && resolvedTheme === "dark"
-      ? "/logos/myboss-dark.png"
-      : "/logos/myboss-light.png";
-
+export function Brand({ collapsed = false, className = "", href = "/dashboard" }: BrandProps) {
   return (
-    <Link
-      href={href}
-      aria-label="MyBoss home"
-      className={`flex min-w-0 items-center ${className}`}
-    >
-      <Image
-        src={logo}
-        alt="MyBoss"
-        width={64}
-        height={64}
-        priority
-        className={`shrink-0 object-contain ${
-          collapsed ? "h-8 w-8" : "h-8 w-8"
-        }`}
-      />
-      {!collapsed && (
-        <span className="ml-1.5 text-[15px] font-semibold tracking-[-0.03em] text-sidebar-foreground">
-          myboss
-        </span>
-      )}
+    <Link href={href} aria-label="MyBoss home" className={`myboss-brand ${className}`}>
+      <span aria-hidden="true" className="myboss-mark">
+        <Image src="/logos/myboss-new-logo.png" alt="" width={1536} height={1024}
+          sizes="(min-width: 800px) 360px, 160px" />
+      </span>
+      {!collapsed && <span className="myboss-wordmark">myboss</span>}
     </Link>
   );
 }

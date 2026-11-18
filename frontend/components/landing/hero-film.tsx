@@ -1,103 +1,76 @@
 "use client";
 
-import { Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { CheckCheck, CirclePlay, LayoutDashboard, ListTodo, Pause, Play, Store, Users } from "lucide-react";
 
-const filmUrl = "https://videos.pexels.com/video-files/7488719/7488719-hd_1280_720_24fps.mp4";
+const phoneQuery = "(max-width: 620px)";
+
+function subscribeToWidth(update: () => void) {
+  const query = window.matchMedia(phoneQuery);
+  query.addEventListener("change", update);
+  return () => query.removeEventListener("change", update);
+}
+
+function getFilmPath() {
+  return window.matchMedia(phoneQuery).matches ? "/media/opening-checklist-mobile" : "/media/opening-checklist";
+}
 
 export function HeroFilm() {
-  const frame = useRef<HTMLDivElement>(null);
-  const video = useRef<HTMLVideoElement>(null);
-  const [motionEnabled, setMotionEnabled] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [paused, setPaused] = useState(false);
+  const path = useSyncExternalStore(subscribeToWidth, getFilmPath, () => null);
+  const film = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const userPaused = useRef(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setMotionEnabled(!query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  useEffect(() => {
-    const layer = frame.current;
-    if (!layer) return;
-    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
-    observer.observe(layer);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const clip = video.current;
-    if (!clip) return;
-    if (!visible || paused) {
-      clip.pause();
-      return;
+    const element = film.current;
+    if (!element || !path) return;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+    function sync() {
+      if (!element) return;
+      if (visible && !userPaused.current && !motion.matches) void element.play().catch(() => {});
+      else element.pause();
     }
-    void clip.play().catch(() => setPlaying(false));
-  }, [visible, paused, motionEnabled]);
-
-  useEffect(() => {
-    const layer = frame.current;
-    if (!layer || !visible || !motionEnabled || paused) return;
-    let request = 0;
-    const update = () => {
-      if (request) return;
-      request = window.requestAnimationFrame(() => {
-        const { top, height } = layer.getBoundingClientRect();
-        const progress = Math.min(1, Math.max(0, -top / height));
-        layer.style.setProperty("--film-offset", `${progress * 7}%`);
-        request = 0;
-      });
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => {
-      window.cancelAnimationFrame(request);
-      window.removeEventListener("scroll", update);
-    };
-  }, [motionEnabled, paused, visible]);
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      sync();
+    });
+    observer.observe(element);
+    motion.addEventListener("change", sync);
+    return () => { observer.disconnect(); motion.removeEventListener("change", sync); };
+  }, [path]);
 
   return (
-    <>
-      <div ref={frame} className="hero-film" aria-hidden="true">
-        <div className="hero-film-picture">
-          {motionEnabled && !failed && (
-            <video
-              ref={video}
-              className={ready ? "is-ready" : undefined}
-              src={filmUrl}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              onPlaying={() => {
-                setReady(true);
-                setPlaying(true);
-              }}
-              onPause={() => setPlaying(false)}
-              onError={() => setFailed(true)}
-            />
-          )}
+    <figure className="tour" id="tour">
+      <div className="tour-window">
+        <div className="tour-bar">
+          <span className="window-lights" aria-hidden="true"><i /><i /><i /></span>
+          <span>Workspace preview</span><span className="tour-film-label"><CirclePlay size={13} /> Product film</span>
+        </div>
+        <div className="tour-body">
+          <div className="tour-sidebar" aria-hidden="true">
+            <b><Store /> Maple Street</b>
+            <span><LayoutDashboard /> Overview</span><span className="tour-selected"><ListTodo /> Tasks</span><span><Users /> Staff</span>
+          </div>
+          <div className="tour-content">
+            <div className="tour-crumb"><CheckCheck size={16} /> Tasks <span>/</span> Maple Street Market</div>
+            <video ref={film} src={path ? `${path}.mp4` : undefined} poster={path ? `${path}.webp` : undefined}
+              muted loop playsInline preload="metadata" aria-label="Example opening checklist. Jules completes the till count and the total updates to two of three tasks."
+              onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => setFailed(true)} />
+          </div>
         </div>
       </div>
-      {motionEnabled && !failed && (
-        <button
-          type="button"
-          className="hero-film-control"
-          aria-label={playing ? "Pause background video" : "Play background video"}
-          onClick={() => {
-            setPaused(playing);
-            if (!playing) void video.current?.play().catch(() => setPlaying(false));
-          }}
-        >
-          {playing ? <Pause size={16} /> : <Play size={16} />}
-        </button>
-      )}
-    </>
+      <figcaption>
+        <span>Inside MyBoss <span className="tour-caption-detail">/ &nbsp; A morning at Maple Street Market</span></span>
+        {!failed && <button type="button" aria-label={playing ? "Pause product film" : "Play product film"} onClick={() => {
+          const element = film.current;
+          if (!element) return;
+          userPaused.current = !element.paused;
+          if (element.paused) void element.play().catch(() => {});
+          else element.pause();
+        }}>{playing ? <Pause size={13} /> : <Play size={13} />}{playing ? "Pause" : "Play"}</button>}
+      </figcaption>
+    </figure>
   );
 }

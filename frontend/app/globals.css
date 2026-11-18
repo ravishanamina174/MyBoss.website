@@ -297,3 +297,9 @@ body {
     animation-iteration-count: 1 !important;
   }
 }
+
+.myboss-brand { display: inline-flex; align-items: center; gap: .28em; width: fit-content; color: inherit; font-size: 18px; line-height: 1; }
+.myboss-wordmark { font-weight: 730; letter-spacing: -.065em; }
+.myboss-mark { position: relative; display: block; flex: none; width: 1.55em; aspect-ratio: 1; overflow: hidden; }
+.myboss-mark img { position: absolute; width: 218%; max-width: none; height: auto; left: 50%; top: 50%; transform: translate(-52%, -50%); }
+.dark .myboss-mark img { filter: invert(1); }
