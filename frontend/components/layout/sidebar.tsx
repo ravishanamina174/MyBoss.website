@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowUpRight, Store } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ownerNavigation, staffNavigation } from "@/config/navigation";
 import { Brand } from "@/components/shared/brand";
@@ -31,31 +32,32 @@ export function Sidebar() {
   const groups = groupNavigation(navigation);
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[220px] flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-      <div className="flex h-[52px] items-center border-b border-sidebar-border px-4">
+    <aside className="workspace-sidebar z-40 hidden flex-col border-r border-sidebar-border lg:flex">
+      <div className="workspace-sidebar-brand flex items-center border-b border-sidebar-border px-5">
         <Brand />
       </div>
 
-      <div className="px-3 pt-3">
+      <div className="px-3 pt-4">
         <Link
           href="/"
           aria-label="Open MyBoss home"
-          className="flex cursor-pointer items-center gap-2.5 rounded-[5px] border border-sidebar-border bg-background px-2.5 py-2 transition-colors hover:bg-surface-elevated focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex items-center gap-2.5 rounded-[7px] border border-sidebar-border bg-card px-2.5 py-2.5 transition-colors hover:bg-accent"
         >
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[5px] bg-surface-elevated text-[11px] font-semibold text-foreground">
-            M
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-[5px] bg-accent text-accent-foreground">
+            <Store size={16} />
           </div>
 
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-medium text-sidebar-foreground">
-              My Business
+              MyBoss home
             </p>
-            <p className="text-[11px] text-muted-foreground">Workspace</p>
+            <p className="text-[11px] text-muted-foreground">Public website</p>
           </div>
+          <ArrowUpRight size={14} className="shrink-0 text-muted-foreground" />
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2.5 py-4">
+      <nav aria-label="Workspace navigation" className="flex-1 overflow-y-auto px-3 py-5">
         {groups.map((group, index) => (
           <div key={group.section} className={cn(index > 0 && "mt-4")}>
             <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -77,13 +79,13 @@ export function Sidebar() {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "flex h-8 items-center gap-2.5 rounded-[5px] px-2 text-[13px] font-medium transition-colors",
+                      "flex h-10 items-center gap-2.5 rounded-[6px] border border-transparent px-2.5 text-[13px] font-medium transition-colors",
                       isActive
-                        ? "bg-surface-elevated text-foreground"
+                        ? "font-semibold"
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                     )}
                   >
-                    <Icon className="h-3.5 w-3.5 shrink-0" />
+                    <Icon className="h-4 w-4 shrink-0" />
                     <span>{item.label}</span>
                   </Link>
                 );

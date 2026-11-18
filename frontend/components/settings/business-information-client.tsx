@@ -243,11 +243,10 @@ export function BusinessInformationClient() {
   const cardUrl = `/card/${information.publicIdentifier}`;
 
   return (
-    <section className="space-y-5">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+    <section className="workspace-page">
+      <div className="workspace-page-header">
         <div>
-          <p className="text-[12px] font-medium text-primary">Business information</p>
-          <h1 className="mt-0.5 text-[22px] font-semibold tracking-tight">Tell the world what you do</h1>
+          <h1 className="font-semibold">Business information</h1>
           <p className="mt-1 max-w-2xl text-[13px] text-muted-foreground">Manage your public business page and shareable digital card. Only owners can edit or publish them.</p>
         </div>
         <span className="w-fit rounded-[4px] border border-border bg-secondary px-2 py-0.5 text-[11px] font-medium">{isOwner ? "Owner access" : "View only"}</span>
@@ -259,7 +258,7 @@ export function BusinessInformationClient() {
         </div>
       )}
 
-      <form onSubmit={saveProfile} className="space-y-5 rounded-lg border border-border bg-card p-4 sm:p-5">
+      <form onSubmit={saveProfile} className="workspace-box space-y-6 p-5 sm:p-7">
         <SectionHeading title="Business profile" description="This information appears on your public business page after you publish it." />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Business name" value={profile.name} disabled={!isOwner} required onChange={(value) => setProfile({ ...profile, name: value })} />
@@ -314,7 +313,7 @@ export function BusinessInformationClient() {
         </div>
       </form>
 
-      <form onSubmit={saveCard} className="space-y-5 rounded-lg border border-border bg-card p-4 sm:p-5">
+      <form onSubmit={saveCard} className="workspace-box space-y-6 p-5 sm:p-7">
         <SectionHeading title="Digital business card" description="Your card has its own publishing switch and public link." />
         <div className="grid gap-4 sm:grid-cols-2">
           <TextArea label="Short description" value={card.description} disabled={!isOwner} rows={3} onChange={(value) => setCard({ ...card, description: value })} />

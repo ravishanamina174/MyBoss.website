@@ -18,10 +18,10 @@ export function MobileNavigation() {
   return (
     <nav
       aria-label="Mobile navigation"
-      className="sticky top-[108px] z-20 overflow-hidden border-b border-border bg-sidebar/95 backdrop-blur-md lg:hidden"
+      className="workspace-mobile-nav sticky z-20 overflow-hidden border-b border-border bg-sidebar lg:hidden"
     >
       <div
-        className="mobile-nav-scrollbar flex w-full min-w-0 gap-1 overflow-x-auto px-3 py-3"
+        className="mobile-nav-scrollbar flex w-full min-w-0 gap-1.5 overflow-x-auto px-3 py-2"
       >
         {navigation.map((item) => {
           const Icon = item.icon;
@@ -37,9 +37,9 @@ export function MobileNavigation() {
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex h-11 shrink-0 items-center gap-2 rounded-xl px-4 text-[14px] font-semibold transition-colors",
+                "flex h-10 shrink-0 items-center gap-2 rounded-md border border-transparent px-3 text-[13px] font-semibold transition-colors",
                 isActive
-                  ? "bg-foreground text-background"
+                  ? "text-accent-foreground"
                   : "text-muted-foreground hover:bg-secondary hover:text-foreground"
               )}
             >

@@ -9,6 +9,7 @@ import {
   LoaderCircle,
 } from "lucide-react";
 
+import { AuthFrame } from "@/components/shared/auth-frame";
 import { api } from "@/lib/api/client";
 import { setActiveBusiness } from "@/lib/business-session";
 
@@ -69,14 +70,14 @@ export function StaffInvitationAccept({
   }
 
   return (
-    <main className="flex min-h-[80vh] items-center justify-center px-4 py-12">
-      <section className="w-full max-w-md space-y-6 rounded-xl border border-border bg-card p-6 text-center sm:p-8">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+    <AuthFrame>
+      <section className="myboss-auth-panel space-y-6">
+        <div className="myboss-auth-icon">
           <Users className="h-7 w-7" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1>
             Join a business team
           </h1>
 
@@ -140,6 +141,6 @@ export function StaffInvitationAccept({
           Invitation validity is checked securely by MyBoss.
         </p>
       </section>
-    </main>
+    </AuthFrame>
   );
 }

@@ -291,8 +291,8 @@ export function StaffPageClient() {
   }
 
   return (
-    <section className="space-y-5">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+    <section className="workspace-page">
+      <div className="workspace-page-header">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight">
             Staff management
@@ -362,7 +362,7 @@ export function StaffPageClient() {
         />
       </div>
 
-      <section className="space-y-4 rounded-lg border border-border bg-card p-4">
+      <section className="workspace-box space-y-4 p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
             <h2 className="text-[14px] font-semibold">Invite staff</h2>
@@ -460,7 +460,7 @@ export function StaffPageClient() {
         )}
       </section>
 
-      <section className="space-y-4 rounded-lg border border-border bg-card p-4">
+      <section className="workspace-box space-y-4 p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
             <h2 className="text-[14px] font-semibold">Your team</h2>
@@ -586,12 +586,12 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-3.5">
+    <div className="workspace-box workspace-metric">
       <div className="flex items-center justify-between">
-        <p className="text-[13px] text-muted-foreground">{label}</p>
-        <span className="text-muted-foreground">{icon}</span>
+        <p className="workspace-metric-label">{label}</p>
+        <span className="workspace-metric-icon">{icon}</span>
       </div>
-      <p className="mt-2.5 text-[22px] font-semibold tabular-nums">{value}</p>
+      <strong>{value}</strong>
     </div>
   );
 }

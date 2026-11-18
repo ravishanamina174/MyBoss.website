@@ -88,7 +88,7 @@ export function BusinessSettingsClient() {
 
   const isOwner = business.role === "OWNER";
   return (
-    <section className="max-w-3xl space-y-5">
+    <section className="workspace-page max-w-3xl">
       <div>
         <h1 className="text-[22px] font-semibold tracking-tight">Business settings</h1>
         <p className="mt-0.5 text-[13px] text-muted-foreground">
@@ -103,7 +103,7 @@ export function BusinessSettingsClient() {
           {error || message}
         </div>
       )}
-      <section className="space-y-4 rounded-lg border border-border bg-card p-4">
+      <section className="space-y-4 workspace-box p-5 sm:p-6">
         <div>
           <h2 className="text-[14px] font-semibold">Business profile</h2>
           <p className="mt-1 text-[13px] text-muted-foreground">
@@ -142,7 +142,7 @@ export function BusinessSettingsClient() {
           <p className="text-[13px] text-muted-foreground">Staff members have view-only access.</p>
         )}
       </section>
-      <section className="rounded-lg border border-border bg-card p-4">
+      <section className="workspace-box p-5 sm:p-6">
         <h2 className="text-[14px] font-semibold">Your account and membership</h2>
         <dl className="mt-4 grid gap-4 text-[13px] sm:grid-cols-2">
           <div>

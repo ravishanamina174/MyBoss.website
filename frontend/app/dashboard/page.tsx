@@ -42,20 +42,21 @@ function StatCard({
   value,
   description,
   icon: Icon,
+  tone = "blue",
 }: {
   title: string;
   value: number;
   description: string;
   icon: typeof Activity;
+  tone?: "blue" | "amber" | "green" | "indigo";
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center justify-between">
-        <p className="text-[13px] font-medium text-muted-foreground">{title}</p>
-        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+    <div className="workspace-box workspace-metric">
+      <div>
+        <p className="workspace-metric-label">{title}</p>
+        <span className="workspace-metric-icon" data-tone={tone}><Icon size={16} /></span>
       </div>
-
-      <p className="mt-3 text-[22px] font-semibold tracking-tight tabular-nums">{value}</p>
+      <strong>{value}</strong>
       <p className="mt-1 text-[12px] text-muted-foreground">{description}</p>
     </div>
   );
@@ -114,29 +115,22 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <div className="h-5 w-40 animate-pulse rounded-[5px] bg-muted" />
-          <div className="h-3.5 w-56 animate-pulse rounded-[5px] bg-muted" />
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="workspace-page" role="status">
+        <span className="sr-only">Loading your dashboard…</span>
+        <div aria-hidden="true" className="workspace-box h-28 animate-pulse" />
+        <div aria-hidden="true" className="workspace-stat-grid">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={index}
-              className="h-24 animate-pulse rounded-lg border border-border bg-muted/40"
-            />
+            <div key={index} className="workspace-box h-28 animate-pulse" />
           ))}
         </div>
-
-        <div className="h-52 animate-pulse rounded-lg border border-border bg-muted/40" />
+        <div aria-hidden="true" className="workspace-box h-52 animate-pulse" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="flex min-h-[240px] flex-col items-center justify-center rounded-lg border border-dashed border-border p-6 text-center">
+      <div className="workspace-box workspace-empty min-h-[240px]">
         <AlertCircle className="mb-2.5 h-5 w-5 text-destructive" />
 
         <h2 className="text-[16px] font-semibold">Unable to load dashboard</h2>
@@ -181,56 +175,30 @@ export default function DashboardPage() {
   const isOwner = business.role === "OWNER";
 
   return (
-    <div className="space-y-5">
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-        <div>
-          <p className="text-[12px] text-muted-foreground">
-            {isOwner ? "Business overview" : "Your workspace"}
-          </p>
-
-          <h1 className="mt-0.5 text-[22px] font-semibold tracking-tight">
-            {business.name}
-          </h1>
-
-          <p className="mt-0.5 text-[13px] text-muted-foreground">
-            Welcome to your MyBoss dashboard.
-          </p>
+    <div className="workspace-page">
+      <header className="workspace-box workspace-identity">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <div className="workspace-identity-icon"><BriefcaseBusiness size={23} /></div>
+          <div className="min-w-0">
+            <h1 className="font-semibold">{business.name}</h1>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">
+              {isOwner ? "Business owner" : "Staff member"}
+              <span className="mx-2" aria-hidden="true">·</span>
+              <span className="capitalize">{business.status.toLowerCase()}</span>
+            </p>
+          </div>
         </div>
-
         <button
           onClick={loadDashboard}
-          className="inline-flex h-8 w-fit items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"
+          className="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-card px-3 font-medium hover:bg-secondary"
         >
-          <RefreshCw className="h-3.5 w-3.5" />
-          Refresh
+          <RefreshCw size={15} /> Refresh
         </button>
-      </div>
+      </header>
 
-      {/* Business information */}
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-[5px] bg-secondary">
-          <BriefcaseBusiness className="h-4 w-4" />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium">{business.name}</p>
-          <p className="text-[12px] text-muted-foreground">
-            {isOwner ? "Business Owner" : "Staff Member"} ·{" "}
-            {business.status}
-          </p>
-        </div>
-
-        <span className="rounded-[4px] border border-border bg-secondary px-2 py-0.5 text-[11px] font-medium">
-          {business.role}
-        </span>
-      </div>
-
-      {/* Statistics */}
-      <section>
-        <h2 className="mb-3 text-[16px] font-semibold">Overview</h2>
-
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section aria-labelledby="overview-heading">
+        <h2 id="overview-heading" className="mb-3 font-semibold">At a glance</h2>
+        <div className="workspace-stat-grid">
           <StatCard
             title="Total Tasks"
             value={tasks.length}
@@ -243,6 +211,7 @@ export default function DashboardPage() {
             value={pendingTasks.length}
             description="Tasks awaiting completion"
             icon={Clock3}
+            tone="amber"
           />
 
           <StatCard
@@ -250,6 +219,7 @@ export default function DashboardPage() {
             value={completedTasks.length}
             description="Successfully completed"
             icon={CheckCircle2}
+            tone="green"
           />
 
           {isOwner ? (
@@ -258,6 +228,7 @@ export default function DashboardPage() {
               value={activeStaff.length}
               description={`${staff.length} total staff members`}
               icon={Users}
+              tone="indigo"
             />
           ) : (
             <StatCard
@@ -267,141 +238,143 @@ export default function DashboardPage() {
               ).length}
               description="Cancelled business tasks"
               icon={AlertCircle}
+              tone="amber"
             />
           )}
         </div>
       </section>
 
-      {/* Recent tasks */}
-      <section className="rounded-lg border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <div>
-            <h2 className="text-[14px] font-semibold">Recent Tasks</h2>
-            <p className="mt-0.5 text-[12px] text-muted-foreground">
-              Latest tasks in your business
-            </p>
-          </div>
-
-          <Link
-            href="/dashboard/tasks"
-            className="inline-flex items-center gap-1 text-[13px] font-medium text-primary hover:underline"
-          >
-            View all <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-
-        {recentTasks.length === 0 ? (
-          <div className="px-4 py-8 text-center">
-            <Activity className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
-            <p className="text-[13px] font-medium">No tasks yet</p>
-            <p className="mt-1 text-[13px] text-muted-foreground">
-              Tasks will appear here when they are created.
-            </p>
-
-            {isOwner && (
-              <Link
-                href="/dashboard/tasks"
-                className="mt-3 inline-flex text-[13px] font-medium text-primary hover:underline"
-              >
-                Go to task management
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="divide-y divide-border">
-            {recentTasks.map((task) => (
-              <div
-                key={task.id}
-                className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-[13px] font-medium">
-                    {task.title}
-                  </p>
-
-                  <p className="mt-0.5 text-[12px] text-muted-foreground">
-                    Created {formatDate(task.createdAt)}
-                  </p>
-                </div>
-
-                <span
-                  className={`inline-flex w-fit items-center gap-1.5 rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px] font-medium ${
-                    task.status === "COMPLETED"
-                      ? "text-success"
-                      : task.status === "CANCELLED"
-                        ? "text-muted-foreground"
-                        : "text-warning"
-                  }`}
-                >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      task.status === "COMPLETED"
-                        ? "bg-success"
-                        : task.status === "CANCELLED"
-                          ? "bg-muted-foreground"
-                          : "bg-warning"
-                    }`}
-                  />
-                  {task.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Owner staff overview */}
-      {isOwner && (
-        <section className="rounded-lg border border-border bg-card">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+      <div className="workspace-overview-panels" data-owner={isOwner}>
+        <section className="workspace-box">
+          <div className="workspace-box-header">
             <div>
-              <h2 className="text-[14px] font-semibold">Team Overview</h2>
+              <h2 className="text-[14px] font-semibold">Recent tasks</h2>
               <p className="mt-0.5 text-[12px] text-muted-foreground">
-                Your business staff members
+                Latest tasks in your business
               </p>
             </div>
 
             <Link
-              href="/dashboard/staff"
+              href="/dashboard/tasks"
               className="inline-flex items-center gap-1 text-[13px] font-medium text-primary hover:underline"
             >
-              Manage staff <ArrowRight className="h-3.5 w-3.5" />
+              View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          {staff.length === 0 ? (
-            <div className="px-4 py-8 text-center">
-              <Users className="mx-auto mb-2 h-5 w-5 text-muted-foreground" />
-              <p className="text-[13px] font-medium">No staff members yet</p>
+          {recentTasks.length === 0 ? (
+            <div className="workspace-empty">
+              <span className="workspace-empty-icon"><Activity size={20} /></span>
+              <p className="text-[13px] font-medium">No tasks yet</p>
               <p className="mt-1 text-[13px] text-muted-foreground">
-                Invite staff members to start managing your team.
+                Tasks will appear here when they are created.
               </p>
+
+              {isOwner && (
+                <Link
+                  href="/dashboard/tasks"
+                  className="mt-3 inline-flex text-[13px] font-medium text-primary hover:underline"
+                >
+                  Go to task management
+                </Link>
+              )}
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {staff.slice(0, 5).map((member) => (
+              {recentTasks.map((task) => (
                 <div
-                  key={member.membershipId}
-                  className="flex items-center justify-between gap-3 px-4 py-3"
+                  key={task.id}
+                  className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-[13px] font-medium">
-                      {member.fullName || member.email}
+                      {task.title}
                     </p>
-                    <p className="truncate text-[12px] text-muted-foreground">
-                      {member.email}
+
+                    <p className="mt-0.5 text-[12px] text-muted-foreground">
+                      Created {formatDate(task.createdAt)}
                     </p>
                   </div>
 
-                  <span className="rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px]">
-                    {member.status}
+                  <span
+                    className={`inline-flex w-fit items-center gap-1.5 rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px] font-medium ${
+                      task.status === "COMPLETED"
+                        ? "text-success"
+                        : task.status === "CANCELLED"
+                          ? "text-muted-foreground"
+                          : "text-warning"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        task.status === "COMPLETED"
+                          ? "bg-success"
+                          : task.status === "CANCELLED"
+                            ? "bg-muted-foreground"
+                            : "bg-warning"
+                      }`}
+                    />
+                    {task.status}
                   </span>
                 </div>
               ))}
             </div>
           )}
         </section>
-      )}
+
+        {/* Owner staff overview */}
+        {isOwner && (
+          <section className="workspace-box">
+            <div className="workspace-box-header">
+              <div>
+                <h2 className="text-[14px] font-semibold">Team overview</h2>
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
+                  Your business staff members
+                </p>
+              </div>
+
+              <Link
+                href="/dashboard/staff"
+                className="inline-flex items-center gap-1 text-[13px] font-medium text-primary hover:underline"
+              >
+                Manage staff <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {staff.length === 0 ? (
+              <div className="workspace-empty">
+                <span className="workspace-empty-icon"><Users size={20} /></span>
+                <p className="text-[13px] font-medium">No staff members yet</p>
+                <p className="mt-1 text-[13px] text-muted-foreground">
+                  Invite staff members to start managing your team.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {staff.slice(0, 5).map((member) => (
+                  <div
+                    key={member.membershipId}
+                    className="flex items-center justify-between gap-3 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-[13px] font-medium">
+                        {member.fullName || member.email}
+                      </p>
+                      <p className="truncate text-[12px] text-muted-foreground">
+                        {member.email}
+                      </p>
+                    </div>
+
+                    <span className="rounded-[4px] border border-border bg-secondary px-1.5 py-0.5 text-[11px]">
+                      {member.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }

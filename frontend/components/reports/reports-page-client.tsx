@@ -62,7 +62,7 @@ export function ReportsPageClient() {
     );
   }
 
-  const maxActivity = Math.max(1, ...report.activity.map((point) => point.created));
+  const maxActivity = Math.max(1, ...report.activity.map((point) => Math.max(point.created, point.completed)));
   const metrics = [
     ["Total tasks", report.totalTasks],
     ["Pending", report.pendingTasks],
@@ -71,8 +71,8 @@ export function ReportsPageClient() {
   ];
 
   return (
-    <section className="space-y-5">
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+    <section className="workspace-page">
+      <div className="workspace-page-header">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight">Reports & analytics</h1>
           <p className="mt-0.5 text-[13px] text-muted-foreground">
@@ -81,7 +81,7 @@ export function ReportsPageClient() {
               : "Your task activity for the selected period."}
           </p>
         </div>
-        <div className="flex flex-wrap items-end gap-2">
+        <div className="workspace-box workspace-toolbar">
           <label className="text-[11px] text-muted-foreground">
             From
             <input
@@ -106,16 +106,16 @@ export function ReportsPageClient() {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         {metrics.map(([label, value]) => (
-          <div key={label} className="rounded-lg border border-border bg-card p-3.5">
+          <div key={label} className="workspace-box workspace-metric">
             <p className="text-[13px] text-muted-foreground">{label}</p>
-            <p className="mt-2 text-[22px] font-semibold tabular-nums">{value}</p>
+            <strong>{value}</strong>
           </div>
         ))}
-        <div className="rounded-lg border border-border bg-card p-3.5">
+        <div className="workspace-box workspace-metric">
           <p className="text-[13px] text-muted-foreground">Completion rate</p>
-          <p className="mt-2 text-[22px] font-semibold tabular-nums">{report.completionRate.toFixed(1)}%</p>
+          <strong>{report.completionRate.toFixed(1)}%</strong>
         </div>
       </div>
 
@@ -128,22 +128,22 @@ export function ReportsPageClient() {
         </div>
       ) : (
         <>
-          <section className="rounded-lg border border-border bg-card p-4">
+          <section className="workspace-box p-5 sm:p-6">
             <h2 className="text-[14px] font-semibold">Task activity</h2>
-            <div className="mt-5 flex h-44 items-end gap-1 overflow-x-auto border-b border-l border-border p-3">
+            <div className="workspace-chart mt-5 flex h-48 items-end gap-1 overflow-x-auto border-b border-l border-border p-3">
               {report.activity.map((point) => (
                 <div
                   key={point.date}
-                  className="group flex min-w-5 flex-1 items-end gap-0.5"
+                  className="group flex h-full min-w-5 flex-1 items-end gap-0.5"
                   title={`${point.date}: ${point.created} created, ${point.completed} completed`}
                 >
                   <div
                     className="w-1/2 rounded-t bg-primary/40"
-                    style={{ height: `${Math.max(4, (point.created / maxActivity) * 100)}%` }}
+                    style={{ height: `${(point.created / maxActivity) * 100}%` }}
                   />
                   <div
                     className="w-1/2 rounded-t bg-primary"
-                    style={{ height: `${Math.max(4, (point.completed / maxActivity) * 100)}%` }}
+                    style={{ height: `${(point.completed / maxActivity) * 100}%` }}
                   />
                 </div>
               ))}
@@ -160,7 +160,7 @@ export function ReportsPageClient() {
             </div>
           </section>
 
-          <section className="rounded-lg border border-border bg-card p-4">
+          <section className="workspace-box p-5 sm:p-6">
             <h2 className="text-[14px] font-semibold">
               {business.role === "OWNER" ? "Staff performance" : "Your performance"}
             </h2>

@@ -397,11 +397,11 @@ export default function TasksPageClient({
   ];
 
   return (
-    <section className="space-y-5 pb-8">
+    <section className="workspace-page">
 
       {/* HEADER */}
 
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      <div className="workspace-page-header">
         <div>
           <h1 className="text-[22px] font-semibold tracking-tight">
             {isOwner ? "Tasks" : "My Tasks"}
@@ -452,28 +452,23 @@ export default function TasksPageClient({
 
       {/* STATISTICS */}
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="workspace-stat-grid">
         {statsCards.map((stat) => {
           const Icon = stat.icon;
 
           return (
             <div
               key={stat.label}
-              className="rounded-lg border border-border bg-card p-3.5"
+              className="workspace-box workspace-metric"
             >
               <div className="flex items-center justify-between">
-                <p className="text-[13px] text-muted-foreground">
+                <p className="workspace-metric-label">
                   {stat.label}
                 </p>
-                <Icon
-                  size={14}
-                  className="text-muted-foreground"
-                />
+                <span className="workspace-metric-icon"><Icon size={16} /></span>
               </div>
 
-              <p className="mt-2.5 text-[22px] font-semibold tabular-nums">
-                {stat.value}
-              </p>
+              <strong>{stat.value}</strong>
             </div>
           );
         })}
@@ -481,7 +476,7 @@ export default function TasksPageClient({
 
       {/* SEARCH AND FILTER */}
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="workspace-box workspace-toolbar flex-col !items-stretch sm:flex-row">
         <div className="relative flex-1">
           <Search
             size={17}
@@ -491,12 +486,14 @@ export default function TasksPageClient({
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
+            aria-label="Search tasks"
             placeholder="Search tasks..."
             className="h-9 w-full rounded-[5px] border border-input bg-input-bg pl-10 pr-3 text-[13px] outline-none transition focus:border-primary"
           />
         </div>
 
         <select
+          aria-label="Filter tasks by status"
           value={filter}
           onChange={(event) =>
             setFilter(event.target.value as TaskFilter)
@@ -518,8 +515,8 @@ export default function TasksPageClient({
           Loading tasks...
         </div>
       ) : filteredTasks.length === 0 ? (
-        <div className="flex min-h-48 flex-col items-center justify-center rounded-lg border border-dashed border-border px-5 text-center">
-          <div className="mb-2.5 rounded-[5px] bg-muted p-2.5">
+        <div className="workspace-box workspace-empty">
+          <div className="workspace-empty-icon">
             <ClipboardList
               size={18}
               className="text-muted-foreground"
@@ -687,7 +684,7 @@ export default function TasksPageClient({
             role="dialog"
             aria-modal="true"
             aria-labelledby="task-dialog-title"
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-border bg-popover p-4 shadow-sm sm:p-5"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg border border-border bg-popover p-5 shadow-xl sm:p-5"
           >
             <div className="mb-5 flex items-center justify-between">
               <div>
@@ -875,7 +872,7 @@ export default function TasksPageClient({
             role="dialog"
             aria-modal="true"
             aria-labelledby="task-details-title"
-            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-lg border border-border bg-popover p-4 shadow-sm sm:p-5"
+            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-lg border border-border bg-popover p-5 shadow-xl sm:p-5"
           >
             <div className="flex items-start justify-between gap-3">
               <div>

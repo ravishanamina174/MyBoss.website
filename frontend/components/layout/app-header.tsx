@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { HelpCircle } from "lucide-react";
+import { ChevronRight, HelpCircle } from "lucide-react";
 
 import { Brand } from "@/components/shared/brand";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -26,7 +26,7 @@ export function AppHeader() {
       : "MyBoss");
 
   return (
-    <header className="sticky top-0 z-30 flex h-[108px] items-end border-b border-border bg-header px-4 pb-4 pt-5 sm:px-5 lg:h-[52px] lg:items-center lg:justify-between lg:px-6 lg:py-0">
+    <header className="workspace-header sticky top-0 z-30 flex items-center border-b border-border bg-header px-4 sm:px-6 lg:justify-between lg:px-8 xl:px-10">
       <div className="flex w-full items-center justify-between lg:hidden">
         <div className="flex min-w-0 items-center gap-2.5">
           <Brand collapsed />
@@ -34,9 +34,9 @@ export function AppHeader() {
             <p className="truncate text-[12px] leading-4 text-muted-foreground">
               myboss
             </p>
-            <h1 className="truncate text-[15px] font-semibold leading-5">
+            <p className="truncate text-[15px] font-semibold leading-5">
               {title}
-            </h1>
+            </p>
           </div>
         </div>
 
@@ -64,7 +64,11 @@ export function AppHeader() {
         </div>
       </div>
 
-      <h1 className="hidden text-[13px] font-semibold lg:block">{title}</h1>
+      <div className="hidden items-center gap-2 text-sm lg:flex">
+        <span className="text-muted-foreground">Workspace</span>
+        <ChevronRight size={14} className="text-muted-foreground" aria-hidden="true" />
+        <span className="font-semibold">{title}</span>
+      </div>
 
       <div className="ml-auto hidden items-center gap-0.5 lg:flex">
         <NotificationBell />

@@ -1,20 +1,22 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 
 import { ThemeProvider } from "@/components/shared/theme-provider";
 
 import "./globals.css";
 import { Suspense } from "react";
 
-const inter = Inter({
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
   variable: "--font-inter",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "MyBoss | Run the business. Own the momentum.",
+    default: "MyBoss | The small business workspace",
     template: "%s | MyBoss",
   },
   description:
@@ -30,6 +32,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
+        data-scroll-behavior="smooth"
         suppressHydrationWarning
         className={inter.variable}
       >

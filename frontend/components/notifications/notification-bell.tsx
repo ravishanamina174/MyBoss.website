@@ -76,7 +76,7 @@ export function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 z-50 w-[min(340px,calc(100vw-2rem))] rounded-lg border border-border bg-popover p-2.5 shadow-sm">
+        <div className="workspace-notifications absolute right-0 top-10 z-50 w-[min(360px,calc(100vw-2rem))] rounded-lg border border-border bg-popover p-3 shadow-lg">
           <div className="flex items-center justify-between border-b border-border px-1 pb-2.5">
             <p className="text-[13px] font-semibold">Notifications</p>
             <button

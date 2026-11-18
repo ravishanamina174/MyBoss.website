@@ -5,6 +5,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Building2, ArrowRight, LoaderCircle } from "lucide-react";
 
+import { AuthFrame } from "@/components/shared/auth-frame";
 import { api } from "@/lib/api/client";
 import { setActiveBusiness } from "@/lib/business-session";
 import type { BusinessResponse } from "@/types/api";
@@ -106,42 +107,40 @@ export function BusinessOnboarding() {
 
   if (!isLoaded || loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
-      </div>
+      <AuthFrame>
+        <div role="status" className="flex items-center gap-2 text-muted-foreground">
+          <LoaderCircle className="size-5 animate-spin text-primary" /> Loading workspaces…
+        </div>
+      </AuthFrame>
     );
   }
 
   return (
-    <main className="flex min-h-[80vh] items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg space-y-7">
-        <div className="space-y-2 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-            <Building2 className="h-7 w-7" />
+    <AuthFrame>
+      <div className="myboss-auth-panel space-y-7">
+        <div className="space-y-3">
+          <div className="myboss-auth-icon">
+            <Building2 className="size-6" />
           </div>
 
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Set up your workspace
+          <h1>
+            {businesses.length ? "Choose your workspace" : "Set up your workspace"}
           </h1>
 
           <p className="text-sm leading-6 text-muted-foreground">
-            Your business workspace keeps your tasks and team
-            organized in one place.
+            {businesses.length ? "Select a business to open its dashboard." : "Start with the name of your business."}
           </p>
         </div>
 
         {businesses.length > 0 ? (
-          <section className="space-y-3">
-            <h2 className="text-sm font-semibold">
-              Choose your business
-            </h2>
+          <section aria-label="Your businesses" className="space-y-3">
 
             {businesses.map((business) => (
               <button
                 key={business.id}
                 type="button"
                 onClick={() => selectBusiness(business)}
-                className="flex w-full items-center gap-3 rounded-[10px] border border-border bg-card p-4 text-left shadow-sm transition-colors hover:border-primary/50 hover:bg-accent/40"
+                className="flex w-full items-center gap-3 rounded-[7px] border border-border bg-background p-4 text-left transition-colors hover:border-primary/50 hover:bg-accent/40"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent text-sm font-semibold text-accent-foreground">
                   {business.name.charAt(0).toUpperCase()}
@@ -164,7 +163,7 @@ export function BusinessOnboarding() {
         ) : (
           <form
             onSubmit={createBusiness}
-            className="space-y-5 rounded-xl border border-border bg-card p-5 sm:p-6"
+            className="space-y-5 rounded-lg border border-border bg-background p-5"
           >
             <div className="space-y-2">
               <label
@@ -228,6 +227,6 @@ export function BusinessOnboarding() {
           </p>
         )}
       </div>
-    </main>
+    </AuthFrame>
   );
 }
