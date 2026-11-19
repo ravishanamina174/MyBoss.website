@@ -9,7 +9,7 @@ export interface BusinessResponse {
   id: string;
   name: string;
   role: "OWNER" | "STAFF";
-  status: "ACTIVE" | "SUSPENDED";
+  status: "PENDING" | "ACTIVE" | "SUSPENDED";
   membershipId: string;
   userId: string;
   userEmail: string;
@@ -184,6 +184,7 @@ export interface AcceptInvitationResponse {
 export interface ApiErrorResponse {
   message?: string;
   error?: string;
+  data?: Record<string, string>;
 }
 
 export interface CreateTaskRequest {
@@ -201,7 +202,7 @@ export interface StaffResponse {
   fullName: string | null;
   email: string;
   role: "OWNER" | "STAFF";
-  status: "ACTIVE" | "SUSPENDED";
+  status: "PENDING" | "ACTIVE" | "SUSPENDED";
   joinedAt: string;
 }
 

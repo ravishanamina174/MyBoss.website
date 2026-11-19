@@ -1,4 +1,4 @@
-.myboss-auth { min-height: 100dvh; background: var(--background); }
+.myboss-auth { min-height: 100dvh; background: #fff; color: #161616; --background: #fff; --card: #fff; --foreground: #161616; --primary: #161616; --primary-hover: #353535; --primary-foreground: #fff; --secondary: #f6f6f5; --accent: #f2f4f2; --accent-foreground: #202020; --border: #e6e6e4; --input: #d7d7d5; --input-bg: #fff; --muted-foreground: #666; }
 .myboss-auth-header {
   display: flex;
   min-height: 64px;
@@ -12,12 +12,12 @@
 .myboss-auth-brand span { font-size: 19px; }
 .myboss-auth-layout {
   display: grid;
-  width: min(100% - 48px, 1100px);
+  width: min(100% - 48px, 1180px);
   min-height: min(670px, calc(100dvh - 112px));
   grid-template-columns: 1fr 1fr;
   margin: 24px auto;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 18px;
   background: var(--card);
 }
 .myboss-auth-side {
@@ -26,15 +26,17 @@
   justify-content: center;
   align-items: flex-start;
   padding: clamp(28px, 5vw, 66px);
-  border-radius: 9px 0 0 9px;
-  background: radial-gradient(at 0 100%, #344e85, transparent 70%), #1a2944;
-  color: #f6f8ff;
+  border-radius: 17px 0 0 17px;
+  background: radial-gradient(circle at 10% 95%, #e5f6ef 0, transparent 40%), radial-gradient(circle at 90% 5%, #fff1dd 0, transparent 42%), #fafaf8;
+  color: #161616;
 }
-.myboss-auth-side p { color: #b8ceff; font-size: 12px; font-weight: 640; text-transform: uppercase; letter-spacing: .12em; }
+.myboss-auth-side p { color: #555; font-size: 12px; font-weight: 640; text-transform: uppercase; letter-spacing: .12em; }
 .myboss-auth-side strong { margin-top: 18px; font-size: clamp(34px, 4vw, 59px); font-weight: 600; letter-spacing: -.07em; line-height: 1.05; text-wrap: balance; }
-.myboss-auth-side ul { display: grid; gap: 12px; margin-top: 34px; color: #d7e3fa; }
+.myboss-auth-side ul { display: grid; gap: 12px; margin-top: 34px; color: #444; }
 .myboss-auth-side li { display: flex; align-items: center; gap: 10px; }
-.myboss-auth-side svg { color: #b8ceff; }
+.myboss-auth-side li:nth-child(1) svg { color: #d7834b; }
+.myboss-auth-side li:nth-child(2) svg { color: #4a9c78; }
+.myboss-auth-side li:nth-child(3) svg { color: #8c78b9; }
 .myboss-auth-content { display: grid; min-width: 0; align-content: center; justify-items: center; padding: clamp(18px, 3vw, 40px); }
 .myboss-auth-content .myboss-clerk-root {
   width: min(100%, 400px) !important;

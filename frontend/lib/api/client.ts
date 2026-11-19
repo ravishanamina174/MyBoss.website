@@ -53,7 +53,7 @@ async function apiRequest<T>(
 
     try {
       const error = (await response.json()) as ApiErrorResponse;
-      message = error.message ?? error.error ?? message;
+      message = Object.values(error.data ?? {})[0] ?? error.message ?? error.error ?? message;
     } catch {
       // Use the default message.
     }

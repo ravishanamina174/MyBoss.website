@@ -8,11 +8,12 @@ import { api } from "@/lib/api/client";
 import type { PublicBusinessResponse } from "@/types/api";
 import { PublicFrame, PublicLoading, PublicUnavailable } from "./public-frame";
 
-export function PublicBusinessPageClient({ publicIdentifier }: { publicIdentifier: string }) {
-  const [business, setBusiness] = useState<PublicBusinessResponse | null>(null);
+export function PublicBusinessPageClient({ publicIdentifier, previewData }: { publicIdentifier: string; previewData?: PublicBusinessResponse }) {
+  const [business, setBusiness] = useState<PublicBusinessResponse | null>(previewData ?? null);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (previewData) return;
     void Promise.resolve().then(async () => {
       try {
         setBusiness(await api.getPublicBusiness(publicIdentifier));
@@ -20,7 +21,7 @@ export function PublicBusinessPageClient({ publicIdentifier }: { publicIdentifie
         setError(err instanceof Error ? err.message : "This business page is not available.");
       }
     });
-  }, [publicIdentifier]);
+  }, [publicIdentifier, previewData]);
 
   if (!business && !error) {
     return <PublicLoading />;
@@ -41,7 +42,7 @@ export function PublicBusinessPageClient({ publicIdentifier }: { publicIdentifie
     <PublicFrame>
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 sm:py-12">
         <section
-          className="relative flex min-h-60 items-end overflow-hidden rounded-lg bg-[#202d48] p-5 text-white sm:min-h-80 sm:p-9"
+          className="relative flex min-h-60 items-end overflow-hidden rounded-lg bg-[#232323] p-5 text-white sm:min-h-80 sm:p-9"
           style={business.coverImageUrl ? {
             backgroundImage: `linear-gradient(to top, #101b2bec, #101b2b1f), url("${business.coverImageUrl}")`,
             backgroundPosition: "center",

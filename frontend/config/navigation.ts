@@ -60,10 +60,4 @@ export const staffNavigation: NavigationItem[] = [
     icon: ListTodo,
     section: "Work",
   },
-  {
-    label: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-    section: "Account",
-  },
 ];

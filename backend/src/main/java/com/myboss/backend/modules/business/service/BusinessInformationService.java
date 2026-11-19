@@ -39,7 +39,7 @@ public class BusinessInformationService {
 
     @Transactional(readOnly = true)
     public BusinessInformationResponse getBusinessInformation(UUID businessId) {
-        authorizationService.requireActiveMembership(businessId);
+        authorizationService.requireOwner(businessId);
         return toInformation(getBusinessOrThrow(businessId));
     }
 
@@ -161,7 +161,8 @@ public class BusinessInformationService {
                 business.getCardContactEmail(),
                 business.getCardPhoneNumber(),
                 business.getCardWebsiteUrl(),
-                business.getCardLogoUrl(),
+                business.getCardLogoUrl() == null || business.getCardLogoUrl().isBlank()
+                        ? business.getProfileImageUrl() : business.getCardLogoUrl(),
                 business.getFacebookUrl(),
                 business.getInstagramUrl(),
                 business.getLinkedinUrl()

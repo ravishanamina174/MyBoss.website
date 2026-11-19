@@ -26,7 +26,7 @@ import type {
   StaffResponse,
 } from "@/types/api";
 
-type StaffFilter = "ALL" | "ACTIVE" | "SUSPENDED";
+type StaffFilter = "ALL" | "PENDING" | "ACTIVE" | "SUSPENDED";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", {
@@ -140,6 +140,8 @@ export function StaffPageClient() {
     (member) => member.status === "ACTIVE"
   ).length;
 
+  const pendingCount = staff.filter((member) => member.status === "PENDING").length;
+
   const suspendedCount = staff.filter(
     (member) => member.status === "SUSPENDED"
   ).length;
@@ -219,8 +221,7 @@ export function StaffPageClient() {
   async function updateStaffStatus(member: StaffResponse) {
     if (!businessId) return;
 
-    const action =
-      member.status === "ACTIVE" ? "suspend" : "reactivate";
+    const action = member.status === "ACTIVE" ? "suspend" : member.status === "PENDING" ? "approve" : "reactivate";
 
     const confirmed = window.confirm(
       `Are you sure you want to ${action} ${getStaffName(member)}?`
@@ -256,7 +257,7 @@ export function StaffPageClient() {
       setNotice(
         member.status === "ACTIVE"
           ? "Staff member suspended."
-          : "Staff member reactivated."
+          : member.status === "PENDING" ? "Staff member approved." : "Staff member reactivated."
       );
 
       await loadData();
@@ -344,7 +345,12 @@ export function StaffPageClient() {
         </div>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-4">
+        <StatCard
+          label="Awaiting approval"
+          value={pendingCount}
+          icon={<UserRound className="h-5 w-5" />}
+        />
         <StatCard
           label="Total staff"
           value={staff.length}
@@ -482,7 +488,7 @@ export function StaffPageClient() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {(["ALL", "ACTIVE", "SUSPENDED"] as const).map((value) => (
+          {(["ALL", "PENDING", "ACTIVE", "SUSPENDED"] as const).map((value) => (
             <button
               key={value}
               type="button"
@@ -495,6 +501,7 @@ export function StaffPageClient() {
             >
               {value === "ALL"
                 ? `All (${staff.length})`
+                : value === "PENDING" ? `Waiting (${pendingCount})`
                 : value === "ACTIVE"
                   ? `Active (${activeCount})`
                   : `Suspended (${suspendedCount})`}
@@ -536,7 +543,7 @@ export function StaffPageClient() {
                       {member.email}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Joined {formatDate(member.joinedAt)}
+                      {member.status === "PENDING" ? "Requested" : "Joined"} {formatDate(member.joinedAt)}
                     </p>
                   </div>
                 </div>
@@ -563,7 +570,7 @@ export function StaffPageClient() {
                     ) : member.status === "ACTIVE" ? (
                       "Suspend"
                     ) : (
-                      "Reactivate"
+                      member.status === "PENDING" ? "Approve" : "Reactivate"
                     )}
                   </button>
                 </div>

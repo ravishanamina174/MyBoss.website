@@ -254,6 +254,8 @@ public List<InvitationResponse> getInvitations(UUID businessId) {
                         BusinessRole.STAFF
                 );
 
+        membership.awaitApproval();
+
         membershipRepository.save(membership);
 
         invitation.accept(membership.getId());
@@ -267,7 +269,7 @@ public List<InvitationResponse> getInvitations(UUID businessId) {
             notificationService.create(
                     businessId, owner.getUserId(), "INVITATION_ACCEPTED",
                     "Staff invitation accepted",
-                    "A staff member joined your business.",
+                    "A staff member is waiting for your approval.",
                     "INVITATION_ACCEPTED:" + invitation.getId(), null, invitation.getId());
         }
 
@@ -275,7 +277,7 @@ public List<InvitationResponse> getInvitations(UUID businessId) {
                 businessId,
                 membership.getId(),
                 BusinessRole.STAFF.name(),
-                "You have successfully joined the business"
+                "Your request is waiting for the business owner to approve it"
         );
     }
 

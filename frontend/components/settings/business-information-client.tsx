@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { api } from "@/lib/api/client";
 import { getActiveBusiness } from "@/lib/business-session";
@@ -88,6 +89,7 @@ function cardFromResponse(
 }
 
 export function BusinessInformationClient() {
+  const router = useRouter();
   const { getToken, isLoaded } = useAuth();
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [role, setRole] = useState<"OWNER" | "STAFF" | null>(null);
@@ -97,6 +99,7 @@ export function BusinessInformationClient() {
   const [card, setCard] = useState(emptyCard);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<"profile" | "card" | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
   const [publishing, setPublishing] = useState<"profile" | "card" | null>(
     null
   );
@@ -117,11 +120,13 @@ export function BusinessInformationClient() {
     try {
       const token = await getToken();
       if (!token) throw new Error("Authentication required. Please sign in again.");
-      const [business, result] = await Promise.all([
-        api.getBusiness(token, activeBusinessId),
-        api.getBusinessInformation(token, activeBusinessId),
-      ]);
+      const business = await api.getBusiness(token, activeBusinessId);
       setRole(business.role);
+      if (business.role !== "OWNER") {
+        router.replace("/dashboard");
+        return;
+      }
+      const result = await api.getBusinessInformation(token, activeBusinessId);
       setInformation(result);
       setProfile(profileFromResponse(result));
       setCard(cardFromResponse(result));
@@ -130,7 +135,7 @@ export function BusinessInformationClient() {
     } finally {
       setLoading(false);
     }
-  }, [getToken]);
+  }, [getToken, router]);
 
   useEffect(() => {
     if (isLoaded) void Promise.resolve().then(() => load());
@@ -145,7 +150,10 @@ export function BusinessInformationClient() {
     try {
       const token = await getToken();
       if (!token) throw new Error("Authentication required. Please sign in again.");
-      const result = await api.updateBusinessProfile(token, businessId, profile);
+      const result = await api.updateBusinessProfile(token, businessId, {
+        ...profile,
+        galleryUrls: profile.galleryUrls.map((url) => url.trim()).filter(Boolean),
+      });
       setInformation(result);
       setProfile(profileFromResponse(result));
       setNotice("Business information saved.");
@@ -219,7 +227,27 @@ export function BusinessInformationClient() {
     }
   }
 
-  if (!isLoaded || loading) {
+  async function uploadImage(file: File, target: string, onUploaded: (url: string) => void) {
+    if (!businessId) return;
+    setUploading(target);
+    setError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("businessId", businessId);
+      const response = await fetch("/api/uploads/business-image", { method: "POST", body: form });
+      const result = await response.json() as { url?: string; error?: string };
+      if (!response.ok || !result.url) throw new Error(result.error || "Image upload failed.");
+      onUploaded(result.url);
+      setNotice("Image uploaded. Save the business information to keep it on your page.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Image upload failed.");
+    } finally {
+      setUploading(null);
+    }
+  }
+
+  if (!isLoaded || loading || role === "STAFF") {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
@@ -239,8 +267,8 @@ export function BusinessInformationClient() {
   }
 
   const isOwner = role === "OWNER";
-  const businessUrl = `/business/${information.publicIdentifier}`;
-  const cardUrl = `/card/${information.publicIdentifier}`;
+  const businessUrl = `/preview/business`;
+  const cardUrl = `/preview/card`;
 
   return (
     <section className="workspace-page">
@@ -282,17 +310,17 @@ export function BusinessInformationClient() {
 
         <div>
           <h3 className="mb-3 text-[13px] font-semibold">Brand images</h3>
-          <p className="mb-3 text-[12px] text-muted-foreground">Use secure image URLs from your preferred image host. Upload storage is not configured in this workspace.</p>
+          <p className="mb-3 text-[12px] text-muted-foreground">Upload images from your computer, then save to update your public page.</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <ImageField label="Profile image / logo URL" value={profile.profileImageUrl} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, profileImageUrl: value })} />
-            <ImageField label="Cover image URL" value={profile.coverImageUrl} disabled={!isOwner} onChange={(value) => setProfile({ ...profile, coverImageUrl: value })} />
+            <ImageField label="Profile image / logo" value={profile.profileImageUrl} disabled={!isOwner} uploading={uploading === "profile"} onUpload={(file) => uploadImage(file, "profile", (url) => setProfile((current) => ({ ...current, profileImageUrl: url })))} onChange={(value) => setProfile({ ...profile, profileImageUrl: value })} />
+            <ImageField label="Cover image" value={profile.coverImageUrl} disabled={!isOwner} uploading={uploading === "cover"} onUpload={(file) => uploadImage(file, "cover", (url) => setProfile((current) => ({ ...current, coverImageUrl: url })))} onChange={(value) => setProfile({ ...profile, coverImageUrl: value })} />
           </div>
         </div>
 
         <div>
           <div className="mb-3 flex items-center justify-between"><div><h3 className="text-[13px] font-semibold">Gallery</h3><p className="text-[12px] text-muted-foreground">{profile.galleryUrls.length}/8 images</p></div>{isOwner && profile.galleryUrls.length < 8 && <button type="button" onClick={() => setProfile({ ...profile, galleryUrls: [...profile.galleryUrls, ""] })} className="inline-flex items-center gap-1 text-[12px] font-semibold text-primary"><Plus className="h-3.5 w-3.5" /> Add image</button>}</div>
           <div className="space-y-2">
-            {profile.galleryUrls.map((url, index) => <div key={`${index}-${url}`} className="flex gap-2"><input type="url" value={url} disabled={!isOwner} onChange={(event) => { const galleryUrls = [...profile.galleryUrls]; galleryUrls[index] = event.target.value; setProfile({ ...profile, galleryUrls }); }} placeholder="https://images.example.com/photo.jpg" className="h-9 min-w-0 flex-1 rounded-[5px] border border-input bg-input-bg px-3 text-[13px] outline-none focus:border-primary disabled:opacity-60" />{isOwner && <button type="button" aria-label="Remove gallery image" onClick={() => setProfile({ ...profile, galleryUrls: profile.galleryUrls.filter((_, itemIndex) => itemIndex !== index) })} className="rounded-[5px] border border-border px-2.5 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>}</div>)}
+            {profile.galleryUrls.map((url, index) => <div key={index} className="flex flex-wrap gap-2"><input type="url" value={url} disabled={!isOwner} onChange={(event) => { const galleryUrls = [...profile.galleryUrls]; galleryUrls[index] = event.target.value; setProfile({ ...profile, galleryUrls }); }} placeholder="https://images.example.com/photo.jpg" className="h-9 min-w-0 flex-1 rounded-[5px] border border-input bg-input-bg px-3 text-[13px] outline-none focus:border-primary disabled:opacity-60" />{isOwner && <label className="inline-flex h-9 cursor-pointer items-center gap-1 rounded-[5px] border border-border px-3 text-[12px] font-medium hover:bg-secondary"><ImagePlus className="h-3.5 w-3.5" />{uploading === `gallery-${index}` ? "Uploading" : "Upload"}<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" className="sr-only" disabled={uploading !== null} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadImage(file, `gallery-${index}`, (imageUrl) => setProfile((current) => ({ ...current, galleryUrls: current.galleryUrls.map((item, i) => i === index ? imageUrl : item) }))); event.target.value = ""; }} /></label>}{isOwner && <button type="button" aria-label="Remove gallery image" onClick={() => setProfile({ ...profile, galleryUrls: profile.galleryUrls.filter((_, itemIndex) => itemIndex !== index) })} className="rounded-[5px] border border-border px-2.5 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>}{url && <div className="relative h-20 w-full overflow-hidden rounded-[5px] border border-border"><Image src={url} alt="Gallery preview" fill sizes="400px" unoptimized className="object-cover" /></div>}</div>)}
             {profile.galleryUrls.length === 0 && <div className="rounded-[5px] border border-dashed border-border p-5 text-center text-[13px] text-muted-foreground"><ImagePlus className="mx-auto mb-2 h-4 w-4" />Add up to eight gallery image URLs.</div>}
           </div>
         </div>
@@ -306,7 +334,7 @@ export function BusinessInformationClient() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3 border-t pt-4">
-          {isOwner && <button type="submit" disabled={saving !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50">{saving === "profile" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}Save business information</button>}
+          {isOwner && <button type="submit" disabled={saving !== null || uploading !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50">{saving === "profile" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}Save business information</button>}
           <a href={businessUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"><ExternalLink className="h-3.5 w-3.5" />Preview page</a>
           {isOwner && <button type="button" onClick={() => void setPublished("profile", !information.profilePublished)} disabled={publishing !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary disabled:opacity-50">{publishing === "profile" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}{information.profilePublished ? "Unpublish page" : "Publish page"}</button>}
           {information.profilePublished && <button type="button" onClick={() => void copyLink("business")} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-primary"><Copy className="h-3.5 w-3.5" />Copy link</button>}
@@ -321,11 +349,11 @@ export function BusinessInformationClient() {
           <Field label="Card email" type="email" value={card.contactEmail} disabled={!isOwner} onChange={(value) => setCard({ ...card, contactEmail: value })} />
           <Field label="Card phone" value={card.phoneNumber} disabled={!isOwner} onChange={(value) => setCard({ ...card, phoneNumber: value })} />
           <Field label="Card website URL" type="url" value={card.websiteUrl} disabled={!isOwner} onChange={(value) => setCard({ ...card, websiteUrl: value })} />
-          <ImageField label="Card logo URL" value={card.logoUrl} disabled={!isOwner} onChange={(value) => setCard({ ...card, logoUrl: value })} />
+          <ImageField label="Card logo" value={card.logoUrl} disabled={!isOwner} uploading={uploading === "card"} onUpload={(file) => uploadImage(file, "card", (url) => setCard((current) => ({ ...current, logoUrl: url })))} onChange={(value) => setCard({ ...card, logoUrl: value })} />
         </div>
         <CardPreview information={information} card={card} />
         <div className="flex flex-wrap items-center gap-3 border-t pt-4">
-          {isOwner && <button type="submit" disabled={saving !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50">{saving === "card" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}Save card</button>}
+          {isOwner && <button type="submit" disabled={saving !== null || uploading !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] bg-primary px-3 text-[13px] font-semibold text-primary-foreground hover:bg-primary-hover disabled:opacity-50">{saving === "card" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}Save card</button>}
           <a href={cardUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary"><ExternalLink className="h-3.5 w-3.5" />Full view</a>
           {isOwner && <button type="button" onClick={() => void setPublished("card", !information.card.published)} disabled={publishing !== null} className="inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-border px-3 text-[13px] font-medium hover:bg-secondary disabled:opacity-50">{publishing === "card" && <LoaderCircle className="h-3.5 w-3.5 animate-spin" />}{information.card.published ? "Unpublish card" : "Publish card"}</button>}
           {information.card.published && <button type="button" onClick={() => void copyLink("card")} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-primary"><Copy className="h-3.5 w-3.5" />Copy card link</button>}
@@ -347,8 +375,8 @@ function TextArea({ label, value, onChange, disabled, rows }: { label: string; v
   return <label className="block space-y-1.5 text-[12px] font-medium">{label}<textarea rows={rows} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="w-full resize-y rounded-[5px] border border-input bg-input-bg px-3 py-2 text-[13px] font-normal outline-none focus:border-primary disabled:opacity-60" /></label>;
 }
 
-function ImageField({ label, value, onChange, disabled }: { label: string; value: string; onChange: (value: string) => void; disabled: boolean }) {
-  return <div className="space-y-2"><Field label={label} type="url" value={value} disabled={disabled} placeholder="https://images.example.com/image.jpg" onChange={onChange} />{value && <div className="relative h-24 overflow-hidden rounded-[5px] border border-border bg-muted"><Image src={value} alt="" fill sizes="400px" unoptimized className="object-cover" /></div>}</div>;
+function ImageField({ label, value, onChange, disabled, onUpload, uploading }: { label: string; value: string; onChange: (value: string) => void; disabled: boolean; onUpload: (file: File) => void; uploading: boolean }) {
+  return <div className="space-y-2"><Field label={`${label} URL`} type="url" value={value} disabled={disabled} placeholder="https://images.example.com/image.jpg" onChange={onChange} />{!disabled && <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[5px] border border-border px-3 text-[12px] font-medium hover:bg-secondary"><ImagePlus className="h-4 w-4" />{uploading ? "Uploading…" : "Choose image"}<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" disabled={uploading} className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) onUpload(file); event.target.value = ""; }} /></label>}{value && <div className="relative h-24 overflow-hidden rounded-[5px] border border-border bg-muted"><Image src={value} alt="" fill sizes="400px" unoptimized className="object-cover" /></div>}</div>;
 }
 
 function CardPreview({ information, card }: { information: BusinessInformationResponse; card: UpdateBusinessCardRequest }) {

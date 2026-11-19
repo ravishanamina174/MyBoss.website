@@ -46,6 +46,13 @@ public class StaffService {
         memberships.addAll(
                 membershipRepository.findAllByBusinessIdAndStatus(
                         businessId,
+                        MembershipStatus.PENDING
+                )
+        );
+
+        memberships.addAll(
+                membershipRepository.findAllByBusinessIdAndStatus(
+                        businessId,
                         MembershipStatus.ACTIVE
                 )
         );
@@ -92,10 +99,10 @@ public class StaffService {
         BusinessMembershipEntity membership =
                 getStaffMembership(businessId, membershipId);
 
-        if (membership.getStatus() == MembershipStatus.SUSPENDED) {
+        if (membership.getStatus() != MembershipStatus.ACTIVE) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "Staff member is already suspended"
+                    "Only active staff members can be suspended"
             );
         }
 

@@ -15,6 +15,7 @@ export function BusinessOnboarding() {
   const router = useRouter();
 
   const [businesses, setBusinesses] = useState<BusinessResponse[]>([]);
+  const [pending, setPending] = useState<BusinessResponse[]>([]);
   const [businessName, setBusinessName] = useState("");
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -42,6 +43,7 @@ export function BusinessOnboarding() {
           setBusinesses(
             result.filter((business) => business.status === "ACTIVE")
           );
+          setPending(result.filter((business) => business.status === "PENDING"));
         }
       } catch (err) {
         if (!cancelled) {
@@ -64,6 +66,25 @@ export function BusinessOnboarding() {
       cancelled = true;
     };
   }, [isLoaded, getToken]);
+
+  useEffect(() => {
+    if (!pending.length || businesses.length) return;
+    const timer = window.setInterval(async () => {
+      try {
+        const token = await getToken();
+        if (!token) return;
+        const result = await api.getBusinesses(token);
+        const approved = result.find((business) => business.status === "ACTIVE" && business.role === "STAFF");
+        if (approved) {
+          setActiveBusiness(approved.id);
+          router.replace("/dashboard");
+        }
+      } catch {
+        // Keep the waiting screen visible while the connection recovers.
+      }
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [pending.length, businesses.length, getToken, router]);
 
   function selectBusiness(business: BusinessResponse) {
     setActiveBusiness(business.id);
@@ -124,11 +145,11 @@ export function BusinessOnboarding() {
           </div>
 
           <h1>
-            {businesses.length ? "Choose your workspace" : "Set up your workspace"}
+            {businesses.length ? "Choose your workspace" : pending.length ? "Waiting for approval" : "Set up your workspace"}
           </h1>
 
           <p className="text-sm leading-6 text-muted-foreground">
-            {businesses.length ? "Select a business to open its dashboard." : "Start with the name of your business."}
+            {businesses.length ? "Select a business to open its dashboard." : pending.length ? `The owner of ${pending[0].name} will review your request. This page will open your workspace automatically when approved.` : "Start with the name of your business."}
           </p>
         </div>
 
@@ -160,6 +181,11 @@ export function BusinessOnboarding() {
               </button>
             ))}
           </section>
+        ) : pending.length ? (
+          <div role="status" className="rounded-lg border border-border bg-background p-5 text-sm text-muted-foreground">
+            <LoaderCircle className="mb-3 h-5 w-5 animate-spin text-primary" />
+            Your invitation has been accepted. Waiting for the business owner to approve your access.
+          </div>
         ) : (
           <form
             onSubmit={createBusiness}

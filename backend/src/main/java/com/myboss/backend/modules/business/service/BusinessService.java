@@ -45,6 +45,11 @@ public class BusinessService {
 
         UserEntity user = userSyncService.syncCurrentUser();
 
+        if (membershipRepository.existsByUserIdAndRole(user.getId(), BusinessRole.STAFF)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Staff accounts cannot create a business");
+        }
+
         BusinessEntity business =
                 businessRepository.save(new BusinessEntity(request.name().trim()));
 
@@ -65,11 +70,13 @@ public class BusinessService {
 
         UserEntity user = authorizationService.getCurrentUser();
 
-        List<BusinessMembershipEntity> memberships =
+        List<BusinessMembershipEntity> memberships = new java.util.ArrayList<>(
                 membershipRepository.findAllByUserIdAndStatus(
                         user.getId(),
                         MembershipStatus.ACTIVE
-                );
+                ));
+        memberships.addAll(membershipRepository.findAllByUserIdAndStatus(
+                user.getId(), MembershipStatus.PENDING));
 
         return memberships.stream()
                 .map(membership -> {

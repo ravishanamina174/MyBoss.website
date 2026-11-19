@@ -8,11 +8,12 @@ import { api } from "@/lib/api/client";
 import type { PublicCardResponse } from "@/types/api";
 import { PublicFrame, PublicLoading, PublicUnavailable } from "./public-frame";
 
-export function PublicCardPageClient({ publicIdentifier }: { publicIdentifier: string }) {
-  const [card, setCard] = useState<PublicCardResponse | null>(null);
+export function PublicCardPageClient({ publicIdentifier, previewData }: { publicIdentifier: string; previewData?: PublicCardResponse }) {
+  const [card, setCard] = useState<PublicCardResponse | null>(previewData ?? null);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (previewData) return;
     void Promise.resolve().then(async () => {
       try {
         setCard(await api.getPublicCard(publicIdentifier));
@@ -20,7 +21,7 @@ export function PublicCardPageClient({ publicIdentifier }: { publicIdentifier: s
         setError(err instanceof Error ? err.message : "This card is not available.");
       }
     });
-  }, [publicIdentifier]);
+  }, [publicIdentifier, previewData]);
 
   if (!card && !error) return <PublicLoading />;
   if (!card) return <PublicUnavailable title="Digital card unavailable" message={error || "This card is unpublished or does not exist."} />;
@@ -35,7 +36,7 @@ export function PublicCardPageClient({ publicIdentifier }: { publicIdentifier: s
     <PublicFrame>
       <main className="mx-auto max-w-lg px-5 py-12">
         <article className="overflow-hidden rounded-lg border border-border bg-card">
-          <div className="h-24 bg-[#263b63]" />
+          <div className="h-24 bg-[#252525]" />
           <div className="relative -mt-10 px-5 pb-6 sm:px-7">
             {card.logoUrl ? (
               <div className="relative size-20 overflow-hidden rounded-lg border-2 border-card bg-white">

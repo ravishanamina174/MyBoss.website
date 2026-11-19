@@ -96,4 +96,8 @@ public class BusinessMembershipEntity {
     public void activate() {
         status = MembershipStatus.ACTIVE;
     }
+
+    public void awaitApproval() {
+        status = MembershipStatus.PENDING;
+    }
 }

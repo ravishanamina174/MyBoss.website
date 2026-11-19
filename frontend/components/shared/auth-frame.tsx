@@ -3,7 +3,6 @@ import { ArrowLeft, ClipboardCheck, Users, ChartNoAxesColumn } from "lucide-reac
 import type { ReactNode } from "react";
 
 import { Brand } from "./brand";
-import { ThemeToggle } from "./theme-toggle";
 import "./auth.css";
 
 export const clerkAppearance = {
@@ -36,7 +35,6 @@ export function AuthFrame({ children }: { children: ReactNode }) {
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary">
             <ArrowLeft size={15} /> Back to home
           </Link>
-          <ThemeToggle />
         </div>
       </header>
       <main className="myboss-auth-layout">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import {
   Users,
@@ -11,7 +11,6 @@ import {
 
 import { AuthFrame } from "@/components/shared/auth-frame";
 import { api } from "@/lib/api/client";
-import { setActiveBusiness } from "@/lib/business-session";
 
 export function StaffInvitationAccept({
   invitationToken,
@@ -43,13 +42,11 @@ export function StaffInvitationAccept({
       // Ensure the authenticated user exists in our database.
       await api.getCurrentUser(token);
 
-      const result = await api.acceptInvitation(
+      await api.acceptInvitation(
         token,
         invitationToken
       );
-
-      setActiveBusiness(result.businessId);
-      router.replace("/dashboard");
+      router.replace("/onboarding");
     } catch (err) {
       setError(
         err instanceof Error
@@ -89,23 +86,15 @@ export function StaffInvitationAccept({
 
         {!isSignedIn ? (
           <div className="space-y-3">
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" forceRedirectUrl={`/staff-invitation/accept?token=${encodeURIComponent(invitationToken)}`}>
               <button
                 type="button"
                 className="h-11 w-full rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:opacity-90"
               >
-                Sign in to accept
+                Accept invitation
               </button>
             </SignInButton>
-
-            <SignUpButton mode="modal">
-              <button
-                type="button"
-                className="h-11 w-full rounded-lg border border-border bg-background px-4 text-sm font-semibold hover:bg-secondary"
-              >
-                Create an account
-              </button>
-            </SignUpButton>
+            <p className="text-xs text-muted-foreground">You can sign in or create an account after selecting Accept invitation.</p>
           </div>
         ) : (
           <button
