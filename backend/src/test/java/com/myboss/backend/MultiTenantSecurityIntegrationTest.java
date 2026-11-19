@@ -6,6 +6,9 @@ import com.myboss.backend.modules.business.enums.BusinessRole;
 import com.myboss.backend.modules.business.enums.MembershipStatus;
 import com.myboss.backend.modules.business.repository.BusinessMembershipRepository;
 import com.myboss.backend.modules.business.repository.BusinessRepository;
+import com.myboss.backend.modules.business.entity.StaffInvitationEntity;
+import com.myboss.backend.modules.business.enums.InvitationStatus;
+import com.myboss.backend.modules.business.repository.StaffInvitationRepository;
 import com.myboss.backend.modules.identity.entity.UserEntity;
 import com.myboss.backend.modules.identity.repository.UserRepository;
 import com.myboss.backend.modules.task.entity.TaskEntity;
@@ -16,14 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -33,25 +33,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
+@Transactional
 class MultiTenantSecurityIntegrationTest {
-    @Container
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
-
-    @DynamicPropertySource
-    static void databaseProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-        registry.add("spring.datasource.username", POSTGRES::getUsername);
-        registry.add("spring.datasource.password", POSTGRES::getPassword);
-        registry.add("clerk.issuer", () -> "https://test.clerk.accounts.dev");
-        registry.add("clerk.jwks-uri", () -> "https://test.clerk.accounts.dev/.well-known/jwks.json");
-    }
 
     @Autowired MockMvc mvc;
     @Autowired UserRepository users;
     @Autowired BusinessRepository businesses;
     @Autowired BusinessMembershipRepository memberships;
     @Autowired TaskRepository tasks;
+    @Autowired StaffInvitationRepository invitations;
 
     private BusinessEntity businessA;
     private BusinessEntity businessB;
@@ -63,6 +53,7 @@ class MultiTenantSecurityIntegrationTest {
     private BusinessMembershipEntity staffMembershipA;
     private TaskEntity taskA;
     private TaskEntity taskB;
+    private StaffInvitationEntity invitationB;
 
     @BeforeEach
     void seed() {
@@ -77,10 +68,15 @@ class MultiTenantSecurityIntegrationTest {
         staffMembershipA = memberships.saveAndFlush(new BusinessMembershipEntity(businessA.getId(), staffA.getId(), BusinessRole.STAFF));
         taskA = tasks.saveAndFlush(new TaskEntity(businessA.getId(), ownerMembershipA.getId(), staffMembershipA.getId(), "A task", "", Instant.now().plusSeconds(3600)));
         taskB = tasks.saveAndFlush(new TaskEntity(businessB.getId(), ownerMembershipB.getId(), null, "B task", "", Instant.now().plusSeconds(3600)));
+        invitationB = invitations.saveAndFlush(new StaffInvitationEntity(
+                businessB.getId(), ownerMembershipB.getId(),
+                UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", ""),
+                Instant.now().plus(1, ChronoUnit.HOURS)));
     }
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor as(UserEntity user) {
-        return jwt().jwt(jwt -> jwt.subject(user.getClerkUserId()));
+        return jwt().jwt(jwt -> jwt.subject(user.getClerkUserId())
+                .claim("email", user.getEmail()).claim("full_name", user.getFullName()));
     }
 
     @Test
@@ -126,6 +122,99 @@ class MultiTenantSecurityIntegrationTest {
         staffMembershipA.awaitApproval();
         memberships.saveAndFlush(staffMembershipA);
         mvc.perform(get("/api/businesses/{id}/access", businessA.getId()).with(as(staffA)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void legitimateOwnerAndStaffAccessTheirOwnBusiness() throws Exception {
+        mvc.perform(get("/api/businesses/{id}/access", businessA.getId()).with(as(ownerA)))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/businesses/{id}/access", businessA.getId()).with(as(staffA)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void crossBusinessTaskAndReportAccessIsRejected() throws Exception {
+        mvc.perform(get("/api/businesses/{id}/tasks", businessB.getId()).with(as(ownerA)))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/api/businesses/{id}/reports?from=2026-01-01T00:00:00Z&to=2026-01-02T00:00:00Z", businessB.getId()).with(as(ownerA)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void staffCannotReadOrChangeBusinessInformation() throws Exception {
+        mvc.perform(get("/api/businesses/{id}/information", businessA.getId()).with(as(staffA)))
+                .andExpect(status().isForbidden());
+        mvc.perform(get("/api/businesses/{id}/information", businessB.getId()).with(as(ownerA)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void staffCannotModifyOrDeleteTasks() throws Exception {
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/businesses/{id}/tasks/{taskId}/cancel", businessA.getId(), taskA.getId()).with(as(staffA)))
+                .andExpect(status().isForbidden());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/businesses/{id}/tasks/{taskId}", businessA.getId(), taskA.getId()).with(as(staffA)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void staffCanCompleteTheirAssignedTask() throws Exception {
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/businesses/{id}/tasks/{taskId}/complete", businessA.getId(), taskA.getId()).with(as(staffA)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void crossBusinessInvitationCannotBeRevoked() throws Exception {
+        mvc.perform(post("/api/businesses/{id}/invitations/{invitationId}/revoke", businessA.getId(), invitationB.getId()).with(as(ownerA)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void invalidInvitationTokenIsRejected() throws Exception {
+        mvc.perform(post("/api/invitations/accept").with(as(staffA))
+                        .contentType("application/json")
+                        .content("{\"token\":\"invalid-token\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void ownerCanReadOwnStaffAndReport() throws Exception {
+        mvc.perform(get("/api/businesses/{id}/staff", businessA.getId()).with(as(ownerA)))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/businesses/{id}/reports?from=2026-01-01T00:00:00Z&to=2026-01-02T00:00:00Z", businessA.getId()).with(as(ownerA)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void staffCanReadOnlyTheirOwnReport() throws Exception {
+        mvc.perform(get("/api/businesses/{id}/reports?from=2026-01-01T00:00:00Z&to=2026-01-02T00:00:00Z", businessA.getId()).with(as(staffA)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void crossBusinessNotificationsAreRejected() throws Exception {
+        mvc.perform(get("/api/businesses/{id}/notifications", businessB.getId()).with(as(ownerA)))
+                .andExpect(status().isForbidden());
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                "/api/businesses/{id}/notifications/{notificationId}/read", businessB.getId(), UUID.randomUUID()).with(as(ownerA)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void ownerCannotUpdateAnotherBusinessProfile() throws Exception {
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put(
+                "/api/businesses/{id}/information/profile", businessB.getId()).with(as(ownerA))
+                        .contentType("application/json")
+                        .content("{\"name\":\"tampered\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void staffCannotUpdateAnotherBusinessTask() throws Exception {
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                "/api/businesses/{id}/tasks/{taskId}", businessA.getId(), taskA.getId()).with(as(staffA))
+                        .contentType("application/json")
+                        .content("{\"title\":\"tampered\",\"description\":\"\",\"assignedToMembershipId\":null,\"dueAt\":null}"))
                 .andExpect(status().isForbidden());
     }
 }
