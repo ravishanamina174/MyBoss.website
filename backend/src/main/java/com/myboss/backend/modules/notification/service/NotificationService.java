@@ -1,6 +1,8 @@
 package com.myboss.backend.modules.notification.service;
 
 import com.myboss.backend.modules.business.entity.BusinessMembershipEntity;
+import com.myboss.backend.modules.business.enums.MembershipStatus;
+import com.myboss.backend.modules.business.repository.BusinessMembershipRepository;
 import com.myboss.backend.modules.business.service.BusinessAuthorizationService;
 import com.myboss.backend.modules.notification.dto.NotificationResponse;
 import com.myboss.backend.modules.notification.entity.NotificationEntity;
@@ -19,13 +21,16 @@ import java.util.UUID;
 public class NotificationService {
     private final NotificationRepository repository;
     private final BusinessAuthorizationService authorizationService;
+    private final BusinessMembershipRepository membershipRepository;
 
     public NotificationService(
             NotificationRepository repository,
-            BusinessAuthorizationService authorizationService
+            BusinessAuthorizationService authorizationService,
+            BusinessMembershipRepository membershipRepository
     ) {
         this.repository = repository;
         this.authorizationService = authorizationService;
+        this.membershipRepository = membershipRepository;
     }
 
     @Transactional(readOnly = true)
@@ -81,6 +86,11 @@ public class NotificationService {
             UUID taskId,
             UUID invitationId
     ) {
+        if (!membershipRepository.findByBusinessIdAndUserIdAndStatus(
+                businessId, userId, MembershipStatus.ACTIVE).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Notification recipient is not an active member of this business");
+        }
         if (!repository.existsByEventKey(eventKey)) {
             repository.save(new NotificationEntity(
                     businessId, userId, type, title, message, eventKey,
